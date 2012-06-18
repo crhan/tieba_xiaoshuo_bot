@@ -13,4 +13,8 @@ class User < Sequel::Model
     validates_presence :account
     validates_unique :account
   end
+
+  def subscriptions
+    Subscription.filter(:user => self)
+  end
 end

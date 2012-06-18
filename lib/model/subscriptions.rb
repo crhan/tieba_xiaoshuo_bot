@@ -1,4 +1,4 @@
-class Subscriptions < Sequel::Model
+class Subscription < Sequel::Model
   # create_table? :subscriptions do
   #   primary_key :id
   #   foreign_key :fiction_id, :fictions
