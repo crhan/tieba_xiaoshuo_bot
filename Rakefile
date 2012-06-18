@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'pry'
 require 'sequel'
 require 'logger'
@@ -15,9 +16,23 @@ task :init do
   Sequel::Migrator.run($db,DB_MIGRATION_PATH)
 end
 
+desc "Prepare for the testing dataset"
 task :prepare do
   connect
   require_model
+
+  # insert user date
+  USER_LIST = %W/crhan123@gmail.com ruohanc@gmail.com/
+  USER_LIST.each do |e|
+    User.create :account => e
+  end
+
+  # insert fiction data
+  FICTION_LIST = %W/天珠变 吞噬星空 遮天 修真世界/
+  FICTION_LIST.each do |e|
+    Fiction.create :name => e
+  end
+
 end
 
 desc "Just a test"

@@ -18,4 +18,8 @@ class Fiction < Sequel::Model
   def before_save
     self.url = URI.encode name.encode("gbk")
   end
+
+  def subscriptions
+    Subscription.filter(:fiction => self)
+  end
 end
