@@ -5,7 +5,7 @@ Sequel.migration do
       primary_key :id
       index :id
       String :account
-      Fixnum :total_count
+      Fixnum :total_count, :default => 0
     end
 
     create_table? :fictions do
