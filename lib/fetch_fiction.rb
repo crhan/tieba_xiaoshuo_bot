@@ -1,6 +1,9 @@
+require 'bundler/setup'
+require 'logger'
+require 'sequel'
+require 'sidekiq'
+require 'pry'
 module FetchFiction
-  require 'sequel'
-  require 'logger'
   $logger = Logger.new($stdout)
   # connect database
   DB = Sequel.connect('sqlite://db/xiaoshuo.db', :loggers => [$logger])

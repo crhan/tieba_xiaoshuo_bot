@@ -1,10 +1,12 @@
 # coding: utf-8
 class CronFetch
-  @queue = :cron
+  include Sidekiq::Worker
+  sidekiq_options :retry => false
+  sidekiq_options :queue => :cronJob
 
-  def self.perform
+  def perform
     Fiction.each_entry do |e|
-      Resque.enqueue Fetch, e.id
+      Fetch.perform_async e.id
     end
   end
 end
