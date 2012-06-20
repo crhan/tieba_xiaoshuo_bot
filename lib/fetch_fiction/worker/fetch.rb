@@ -43,7 +43,7 @@ module FetchFiction
             :thread_name => thread_name
           )
         end
-        Send.perform_async fiction_id
+        Send.perform_in 5, fiction_id
       end
     end
   end
