@@ -1,7 +1,8 @@
 # encoding: utf-8
 require 'bundler/setup'
-require 'sequel'
-require 'logger'
+require './lib/fetch_fiction'
+include FetchFiction
+require 'resque/tasks'
 
 CWD = File.dirname(__FILE__)
 task :default => :test
@@ -41,14 +42,18 @@ task :test do
   puts __FILE__
 end
 
+desc "clear checklist"
+task :clear do
+  Subscription.update(:check_id => nil)
+  CheckList.destroy
+end
+
 private
 def connect
   $db = Sequel.connect('sqlite://db/xiaoshuo.db', :test => true, :loggers => [Logger.new($stdout)])
 end
 
 def require_model
-  require './lib/fetch_fiction'
-  include FetchFiction
   Dir.glob "./lib/**/model/*.rb" do |f|
     require f
   end

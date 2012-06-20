@@ -3,11 +3,9 @@ require 'nokogiri'
 
 module FetchFiction
   class Fetch
-    include Sidekiq::Worker
-    sidekiq_options :retry => false
-    sidekiq_options :queue => :fetch_tieba
+    @queue = :fetch_tieba
 
-    def perform fiction_id
+    def self.perform fiction_id
       fiction = Fiction.find( :id => fiction_id )
 
       # fetch resource, retry 3 times
@@ -43,7 +41,7 @@ module FetchFiction
             :thread_name => thread_name
           )
         end
-        Send.perform_in 5, fiction_id
+        Resque.enqueue Send,fiction_id
       end
     end
   end

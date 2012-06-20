@@ -6,8 +6,7 @@ require 'sequel'
 require 'pry'
 require 'nokogiri'
 require 'logger'
-require 'sidekiq'
-require './sidekiq'
+require 'resque'
 
 # connect database
 DB = Sequel.connect('sqlite://db/xiaoshuo.db')
