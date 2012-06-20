@@ -18,4 +18,5 @@ end
 $logger = Logger.new($stdout)
 
 
+include FetchFiction
 binding.pry

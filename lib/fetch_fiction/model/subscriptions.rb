@@ -1,3 +1,4 @@
+# coding: utf-8
 module FetchFiction
   class Subscription < Sequel::Model
     plugin :validation_helpers
@@ -10,7 +11,7 @@ module FetchFiction
         primary_key :id
         foreign_key :fiction_id, :fictions
         foreign_key :user_id, :users
-        foreign_key :check_id, :check_lists, :default => true
+        foreign_key :check_id, :check_lists
         TrueClass :activate?, :default => true
       end
       create_table
@@ -18,7 +19,7 @@ module FetchFiction
 
     # sorry for the misunderstood of check_list
     def checked_id
-      check_id
+      self.check_id || 0
     end
 
   end

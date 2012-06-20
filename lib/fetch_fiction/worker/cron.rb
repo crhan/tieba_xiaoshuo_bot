@@ -7,7 +7,7 @@ module FetchFiction
 
     def perform
       Fiction.each_entry do |e|
-        Fetch.perform_async e.id
+        Fetch.perform_in 5, e.id
       end
     end
   end

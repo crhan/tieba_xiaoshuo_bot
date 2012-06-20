@@ -1,6 +1,7 @@
 # encoding: utf-8
 require 'bundler/setup'
-require './lib/fetch_fiction'
+require 'sequel'
+require 'logger'
 
 CWD = File.dirname(__FILE__)
 task :default => :test
@@ -46,7 +47,9 @@ def connect
 end
 
 def require_model
-  Dir.glob "./lib/model/*.rb" do |f|
+  require './lib/fetch_fiction'
+  include FetchFiction
+  Dir.glob "./lib/**/model/*.rb" do |f|
     require f
   end
 end
