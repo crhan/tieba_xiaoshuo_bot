@@ -11,9 +11,9 @@ task :init do
   DB_PATH = File.join(CWD,"db","xiaoshuo.db")
   DB_MIGRATION_PATH = File.join(CWD,"db","migration")
   FileUtils.rm(DB_PATH) and puts "DB dropped" rescue 0
-  connect
-  Sequel.extension :migration
-  Sequel::Migrator.run($db,DB_MIGRATION_PATH)
+  # connect
+  # Sequel.extension :migration
+  # Sequel::Migrator.run($db,DB_MIGRATION_PATH)
 end
 
 desc "Prepare for the testing dataset"
@@ -30,7 +30,8 @@ task :prepare do
   # insert fiction data
   FICTION_LIST = %W/天珠变 吞噬星空 遮天 修真世界/
   FICTION_LIST.each do |e|
-    Fiction.create :name => e
+    t = Fiction.create :name => e
+    User.first.add_fiction(t)
   end
 
 end
