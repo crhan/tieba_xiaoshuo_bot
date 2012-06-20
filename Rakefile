@@ -2,6 +2,9 @@
 require 'pry'
 require 'sequel'
 require 'logger'
+require 'resque/tasks'
+require 'resque_scheduler/tasks'
+require './lib/fetch_fiction'
 
 CWD = File.dirname(__FILE__)
 task :default => :test

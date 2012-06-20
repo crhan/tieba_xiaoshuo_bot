@@ -1,6 +1,4 @@
 module FetchFiction
-  require 'xmpp4r/client'
-  require 'xmpp4r/roster'
   require 'sequel'
   require 'logger'
   $logger = Logger.new($stdout)
