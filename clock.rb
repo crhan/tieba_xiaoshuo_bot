@@ -7,4 +7,4 @@ handler do |job|
   eval job
 end
 
-every 30, "CronFetch.perform_async"
+every 30, "FetchFiction::CronFetch.perform_async"
