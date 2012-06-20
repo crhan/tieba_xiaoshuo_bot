@@ -9,6 +9,7 @@ module FetchFiction
 
     def perform fiction_id
       fiction = Fiction.find( :id => fiction_id )
+
       # fetch resource, retry 3 times
       require 'net/http'
       begin
@@ -24,29 +25,26 @@ module FetchFiction
           retry
         end
       end
+
+      # test the response
       reg = /第.{1,18}[章节]/;
       doc = Nokogiri::HTML(body)
-      .xpath(%|//div[@class="th_lz"]/img[@alt="置顶"]/../a|)
-      .select {|e| reg.match e.content}
+            .xpath(%|//div[@class="th_lz"]/img[@alt="置顶"]/../a|)
+            .select {|e| reg.match e.content}
       if doc
-        $logger.debug %|#{doc.size} chapter(s) find from #{fiction.name}|
-          doc.each do |e|
+        $logger.debug "#{doc.size} chapter(s) find from #{fiction.name}"
+        doc.each do |e|
           thread_id = e.attribute("href").value.match(/\d+/).to_s
           thread_name = e.child.content.gsub(/^\s/,"")
           $logger.debug %|thread_id: #{thread_id},  threadname: #{thread_name}|
-          begin
-            CheckList.find_or_create(
-              :fiction => fiction,
-              :thread_id => thread_id,
-              :thread_name => thread_name
-            )
-          rescue => e
-            $logger.error e.message
-            $logger.error e.backtrace
-          end
-          end
-        # TODO call send message here if doc.nil?
-      end # if doc end
+          CheckList.find_or_create(
+            :fiction => fiction,
+            :thread_id => thread_id,
+            :thread_name => thread_name
+          )
+        end
+        Send.perform_async fiction_id
+      end
     end
   end
 end
