@@ -1,9 +1,5 @@
 # encoding: utf-8
-require 'pry'
-require 'sequel'
-require 'logger'
-require 'resque/tasks'
-require 'resque_scheduler/tasks'
+require 'bundler/setup'
 require './lib/fetch_fiction'
 
 CWD = File.dirname(__FILE__)
