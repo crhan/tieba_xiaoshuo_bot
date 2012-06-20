@@ -12,8 +12,7 @@ gem "sqlite3", "~> 1.3.6"
 gem 'activesupport', "~> 3.2.6"
 
 # queue and cron job
-gem "sidekiq", "~> 2.0.2"
-gem "whenever", "~> 0.7.3"
+gem 'resque'
 gem 'clockwork'
 
 # parse HTML

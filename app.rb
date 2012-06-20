@@ -3,5 +3,4 @@
 require 'bundler/setup'
 require 'pry'
 require './lib/fetch_fiction'
-require './sidekiq'
 

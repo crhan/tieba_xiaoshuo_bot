@@ -2,10 +2,9 @@
 
 module FetchFiction
   class Send
-    include Sidekiq::Worker
-    sidekiq_options :queue => :send
+    @queue = :send
 
-    def perform fiction_id
+    def self.perform fiction_id
       fiction = Fiction.find(:id => fiction_id)
       check_lists = CheckList.find_by_fiction(fiction)
       Subscription.filter(:fiction => fiction).each do |e|
