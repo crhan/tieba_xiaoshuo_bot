@@ -9,6 +9,7 @@ gem 'activesupport', "~> 3.2.6"
 
 # queue and cron job
 gem "resque", "~> 1.20.0"
+gem "resque-scheduler", "~> 2.0.0"
 
 # parse HTML
 gem "nokogiri", "~> 1.5.4"

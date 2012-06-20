@@ -11,4 +11,3 @@ end
 Dir.glob './**/worker/*.rb' do |f|
   require f
 end
-
