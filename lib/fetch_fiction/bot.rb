@@ -20,7 +20,7 @@ module FetchFiction
       @cl.send(Presence.new)
       $logger.info "Connected ! send messages to #{myJID.strip.to_s}."
       # get the roster
-      @roster = Jabber::Roster::Helper.new(cl)
+      @roster = Jabber::Roster::Helper.new(@cl)
     end
 
     def auto_update_roster_item
@@ -40,9 +40,17 @@ module FetchFiction
       roster.add_subscription_request_callback do |item,presence|
         roster.accept_subscription(presence.from)
         # send back subscription request
-        cl.send(Presence.new.set_type(:subscribe).set_to(presence.from))
+        @cl.send(Presence.new.set_type(:subscribe).set_to(presence.from))
         # greating to the new friend
-        cl.send(Message.new(presence.from, "hello, my new friend~").set_type("chat"))
+        @cl.send(Message.new(presence.from, "hello, my new friend~").set_type("chat"))
+      end
+    end
+
+    # receive an User object and an array of CheckList objects
+    def sendMsg user, send_lists
+      msg = Message.new(user.account).set_type("chat")
+      send_lists.each do |e|
+        @cl.send(msg.set_body(e.to_s))
       end
     end
   end
