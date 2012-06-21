@@ -17,12 +17,26 @@ module FetchFiction
     end
 
     # receive an User object and an array of CheckList objects
-    def sendMsg user, send_lists
-      msg = Jabber::Message.new(user.account).set_type("chat")
-      send_lists.each do |e|
+    def sendMsg user, content
+      # find the user account send to
+      send_to = if user.instance_of? User
+             user.account
+           elsif user.instance_of? String
+             user
+           elsif user.instance_of? Fixnum
+             User.find(:id => user).account
+           end
+      msg = Jabber::Message.new(send_to).set_type("chat")
+      if content.instance_of? Array
+        content.each do |e|
+          $bot.reconnect
+          @@cl.send(msg.set_body(e.to_s))
+          $logger.debug "Send Message to #{send_to}, with #{e.to_s}"
+        end
+      elsif content.instance_of? String
         $bot.reconnect
-        @@cl.send(msg.set_body(e.to_s))
-        $logger.debug "Send Message to #{user.account}, with #{e.to_s}"
+        @@cl.send(msg.set_body(content))
+        $logger.debug "Send Message to #{send_to}, with #{content}"
       end
     end
 
@@ -116,5 +130,7 @@ module FetchFiction
     private_class_method :new
   rescue IOError => e
     @@instance.reconnect
+    sleep 2
+    retry
   end
 end
