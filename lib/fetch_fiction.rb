@@ -9,7 +9,7 @@ module FetchFiction
   #$logger.level = Logger::INFO
 
   # connect database
-  DB = Sequel.connect('sqlite://db/xiaoshuo.db', :loggers => [Logger.new('log/db.log')])
+  DB = Sequel.connect(YAML.load_file("config/database.yml")["database"], :loggers => [Logger.new('log/db.log')])
   # require database model
   Dir.glob "./lib/fetch_fiction/*/*.rb" do |f|
     require f

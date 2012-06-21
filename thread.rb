@@ -10,7 +10,7 @@ require 'sidekiq'
 
 $logger = Logger.new($stdout)
 # connect database
-DB = Sequel.connect('sqlite://db/xiaoshuo.db')
+DB = Sequel.connect(YAML.load_file("config/database.yml")["database"])
 # require database model
 Dir.glob "./lib/**/*.rb" do |f|
   require f

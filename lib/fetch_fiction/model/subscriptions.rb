@@ -12,7 +12,7 @@ module FetchFiction
         foreign_key :fiction_id, :fictions
         foreign_key :user_id, :users
         foreign_key :check_id, :check_lists
-        TrueClass :activate?, :default => true
+        TrueClass :active, :default => true
       end
       create_table
     end
@@ -20,6 +20,19 @@ module FetchFiction
     # sorry for the misunderstood of check_list
     def checked_id
       self.check_id || 0
+    end
+
+    def unsubscribe
+      self.active = false
+      self.save
+    end
+
+    def active?
+      self.active
+    end
+
+    def deactive?
+      ! self.active
     end
 
   end

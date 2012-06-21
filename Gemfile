@@ -8,7 +8,7 @@ gem "sprockets"
 
 # ORM database
 gem "sequel", "~> 3.36.1"
-gem "sqlite3", "~> 1.3.6"
+gem "pg", "~> 0.13.2"
 gem 'activesupport', "~> 3.2.6"
 
 # queue and cron job
