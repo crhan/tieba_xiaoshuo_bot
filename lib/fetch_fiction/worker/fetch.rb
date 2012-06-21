@@ -4,7 +4,7 @@ require 'nokogiri'
 module FetchFiction
   class Fetch
     include Sidekiq::Worker
-    sidekiq_options :retry => false
+#    sidekiq_options :retry => false
     sidekiq_options :queue => :fetch_tieba
 
     # fetch thread from tieba.baidu.com and check if new thread had come.

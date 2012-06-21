@@ -1,7 +1,8 @@
 # coding: utf-8
 require 'bundler/setup'
 require 'clockwork'
-require './lib/fetch_fiction'
+require 'sidekiq'
+require './lib/fetch_fiction/worker/cron'
 include Clockwork
 
 handler do |job|

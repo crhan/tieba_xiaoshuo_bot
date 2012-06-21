@@ -7,7 +7,6 @@ require 'pry'
 require 'nokogiri'
 require 'logger'
 require 'sidekiq'
-require './sidekiq'
 
 $logger = Logger.new($stdout)
 # connect database
