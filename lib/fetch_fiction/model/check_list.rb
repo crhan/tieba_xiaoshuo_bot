@@ -7,9 +7,8 @@ module FetchFiction
 
     unless table_exists?
       set_schema do
-        primary_key :id
+        Integer :thread_id, :primary_key => true
         foreign_key :fiction_id, :fictions
-        String :thread_id
         String :thread_name
         Time :created_at
       end
@@ -29,7 +28,7 @@ module FetchFiction
     end
 
     # return 5 Fiction Thread object array by reverse order
-    def self.find_by_fiction fiction
+    def self.find_by_fiction fiction, return_num = 5
       if fiction.instance_of? Fiction
         self.filter(:fiction => fiction)
       elsif fiction.instance_of? Fixnum
@@ -38,7 +37,7 @@ module FetchFiction
         self.filter(:fiction_id => fiction.to_i)
       else
         raise TypeError, "Need a Fiction object or a Fixnum refer to fiction_id. But I got a #{fiction.class}"
-      end.order(:thread_id).reverse.limit(5).all.reverse
+      end.order(:thread_id).reverse.limit(return_num).all.reverse
     end
   end
 end

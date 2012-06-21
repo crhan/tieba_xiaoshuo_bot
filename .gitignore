@@ -2,3 +2,4 @@
 db/xiaoshuo.db
 echo.rb
 test.rb
+log/*.log

@@ -23,11 +23,12 @@ task :prepare do
   require_model
 
   # insert user date
-  USER_LIST = %W/crhan123@gmail.com ruohanc@gmail.com/
-  USER_LIST.each do |e|
-    User.create :account => e
-  end
+  # USER_LIST = %W/crhan123@gmail.com ruohanc@gmail.com/
+  # USER_LIST.each do |e|
+  #   User.create :account => e
+  # end
 
+  sleep 5
   # insert fiction data
   FICTION_LIST = %W/天珠变 吞噬星空 遮天 修真世界/
   FICTION_LIST.each do |e|
