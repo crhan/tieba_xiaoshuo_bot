@@ -3,6 +3,8 @@ module FetchFiction
   require 'xmpp4r/client'
   require 'xmpp4r/roster'
   class Bot
+    @@myJID = Jabber::JID.new("crhan.xiaoshuo@gmail.com")
+    @@myPassword = 'GefEnsAnift('
     def initialize
       connect
       auto_update_roster_item
@@ -10,37 +12,55 @@ module FetchFiction
       add_message_callback
     end
 
-    def self.close
-      @@cl.close
-    end
-    def self.cl
+    def cl
       @@cl
     end
 
     # receive an User object and an array of CheckList objects
-    def self.sendMsg user, send_lists
+    def sendMsg user, send_lists
       msg = Jabber::Message.new(user.account).set_type("chat")
       send_lists.each do |e|
+        $bot.reconnect
         @@cl.send(msg.set_body(e.to_s))
-        $logger.info "Send Message to #{user.account}, with #{e.to_s}"
+        $logger.debug "Send Message to #{user.account}, with #{e.to_s}"
       end
     end
 
-    private
-    def connect
-      # loggin to gtalk server
-      # Jabber::debug = true
-      myJID = Jabber::JID.new("crhan.xiaoshuo@gmail.com")
-      myPassword = 'GefEnsAnift('
-      @@cl = Jabber::Client.new(myJID)
+    def auth
       @@cl.connect
-      @@cl.auth(myPassword)
+      @@cl.auth(@@myPassword)
       # set online
       @@cl.send(Jabber::Presence.new)
-      $logger.info "Connected ! send messages to #{myJID.strip.to_s}."
+      $logger.info "Connected ! send messages to #{@@myJID.strip.to_s}."
+    end
+
+    def connect
+      # loggin to gtalk server
+      Jabber::debug = true
+      @@cl = Jabber::Client.new(@@myJID)
+      auth
       # get the roster
       @@roster = Jabber::Roster::Helper.new(@@cl)
     end
+
+    def reconnect
+      if @@cl.is_disconnected?
+        @@instance.auth
+        true
+      else
+        false
+      end
+    end
+
+    def is_disconnected?
+      @@cl.is_disconnected?
+    end
+
+    def close
+      @@cl.close
+    end
+
+    private
 
     def auto_update_roster_item
       # register the exist subscription to User model
@@ -67,18 +87,30 @@ module FetchFiction
 
     def add_message_callback
       @@cl.add_message_callback do |m|
-        if m.type != :error
-          m2 = Message.new("crhan123@gmail.com", "#{m.to_s}")
+        if m.type != :error and !m.body.nil?
+          m2 = Jabber::Message.new("crhan123@gmail.com", "#{m.body}")
+          $logger.info "send message to crhan123@gmail.com with #{m.body}"
           m2.type = m.type
           @@cl.send(m2)
           if m.body == 'exit'
-            m2 = Message.new(m.from, "Exiting ...")
+            $logger.info "Exiting~~~"
+            m2 = Jabber::Message.new(m.from, "Exiting ...")
             m2.type = m.type
             @@cl.send(m2)
-            $mainthread.wakeup
           end
         end
       end
     end
+
+    public
+    @@instance = Bot.new
+
+    def self.instance
+      return @@instance
+    end
+
+    private_class_method :new
+  rescue IOError => e
+    @@instance.reconnect
   end
 end

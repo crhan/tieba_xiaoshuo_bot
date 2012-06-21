@@ -5,8 +5,13 @@ module FetchFiction
   class Fetch
     @queue = :fetch_tieba
 
+    # fetch thread from tieba.baidu.com and check if new thread had come.
+    # if true then enqueue the Send Class
     def self.perform fiction_id
+      @update = false
       fiction = Fiction.find( :id => fiction_id )
+      fiction_name = fiction.name
+      $logger.info "Running Fetch #{fiction_name}"
 
       # fetch resource, retry 3 times
       require 'net/http'
@@ -19,7 +24,7 @@ module FetchFiction
           $logger.error e.inspect
           times += 1
           sleep 5 ** times
-          $logger.debug %|Retry #{times} time(s)|
+          $logger.warn %|Retry #{times} time(s)|
           retry
         end
       end
@@ -30,19 +35,29 @@ module FetchFiction
             .xpath(%|//div[@class="th_lz"]/img[@alt="置顶"]/../a|)
             .select {|e| reg.match e.content}
       if doc
-        $logger.debug "#{doc.size} chapter(s) find from #{fiction.name}"
+        $logger.info "#{doc.size} chapter(s) find from #{fiction.name}"
         doc.each do |e|
           thread_id = e.attribute("href").value.match(/\d+/).to_s
           thread_name = e.child.content.gsub(/^\s/,"")
-          $logger.debug %|thread_id: #{thread_id},  threadname: #{thread_name}|
-          CheckList.find_or_create(
-            :fiction => fiction,
-            :thread_id => thread_id,
-            :thread_name => thread_name
-          )
+          $logger.info %|thread_id: #{thread_id},  threadname: #{thread_name}|
+          # New charper find, set update flag
+          unless CheckList.find(:thread_id => thread_id.to_i)
+            nc = CheckList.new
+            nc.thread_id = thread_id.to_i
+            nc.thread_name = thread_name
+            nc.fiction = fiction
+            nc.save
+            @update = true
+          end
         end
+      end
+      if @update
         Resque.enqueue Send,fiction_id
+        $logger.info "Enqueue Send #{fiction_name}"
+      else
+        $logger.info "No update in Fetch #{fiction_name}"
       end
     end
+
   end
 end
