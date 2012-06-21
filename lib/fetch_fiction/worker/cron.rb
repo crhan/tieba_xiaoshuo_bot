@@ -1,12 +1,14 @@
 # coding: utf-8
-class CronFetch
-  include Sidekiq::Worker
-  sidekiq_options :retry => false
-  sidekiq_options :queue => :cronJob
+module FetchFiction
+  class CronFetch
+    @queue = :cronJob
 
-  def perform
-    Fiction.each_entry do |e|
-      Fetch.perform_async e.id
+    def self.perform
+      $logger.info 'Running CronFetch.'
+      Fiction.each_entry do |e|
+        Resque.enqueue Fetch, e.id
+        $logger.info "Enqueue Fetch #{Fiction.find(:id => e.id).name}"
+      end
     end
   end
 end

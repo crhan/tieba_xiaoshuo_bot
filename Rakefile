@@ -1,6 +1,8 @@
 # encoding: utf-8
 require 'bundler/setup'
 require './lib/fetch_fiction'
+include FetchFiction
+require 'resque/tasks'
 
 CWD = File.dirname(__FILE__)
 task :default => :test
@@ -21,11 +23,12 @@ task :prepare do
   require_model
 
   # insert user date
-  USER_LIST = %W/crhan123@gmail.com ruohanc@gmail.com/
-  USER_LIST.each do |e|
-    User.create :account => e
-  end
+  # USER_LIST = %W/crhan123@gmail.com ruohanc@gmail.com/
+  # USER_LIST.each do |e|
+  #   User.create :account => e
+  # end
 
+  sleep 5
   # insert fiction data
   FICTION_LIST = %W/天珠变 吞噬星空 遮天 修真世界/
   FICTION_LIST.each do |e|
@@ -40,13 +43,19 @@ task :test do
   puts __FILE__
 end
 
+desc "clear checklist"
+task :clear do
+  Subscription.update(:check_id => nil)
+  CheckList.destroy
+end
+
 private
 def connect
   $db = Sequel.connect('sqlite://db/xiaoshuo.db', :test => true, :loggers => [Logger.new($stdout)])
 end
 
 def require_model
-  Dir.glob "./lib/model/*.rb" do |f|
+  Dir.glob "./lib/**/model/*.rb" do |f|
     require f
   end
 end
