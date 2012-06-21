@@ -26,6 +26,12 @@ module FetchFiction
       Subscription.filter(:user => self)
     end
 
+    def sended
+      self.total_count += 1
+      self.save
+      total_count
+    end
+
     def deactive
       self.active = false
       self.save

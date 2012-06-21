@@ -9,4 +9,5 @@ handler do |job|
   eval job
 end
 
-every 300, "FetchFiction::CronFetch.perform_in 5"
+every 300, "FetchFiction::CronFetch.perform_async"
+every 10, "FetchFiction::OnlineCheck.perform_async"
