@@ -1,12 +1,11 @@
 # coding: utf-8
 require 'bundler/setup'
 require 'clockwork'
-require 'resque'
-require './lib/fetch_fiction/worker/cron'
+require './lib/fetch_fiction'
 include Clockwork
 
 handler do |job|
   eval job
 end
 
-every 300, "Resque.enqueue FetchFiction::CronFetch"
+every 300, "FetchFiction::CronFetch.perform_in 5"

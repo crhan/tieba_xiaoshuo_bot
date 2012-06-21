@@ -2,7 +2,7 @@
 require 'bundler/setup'
 require 'logger'
 require 'sequel'
-require 'resque'
+require 'sidekiq'
 require 'pry'
 module FetchFiction
   $logger = Logger.new($stdout)

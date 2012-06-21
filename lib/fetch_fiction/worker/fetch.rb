@@ -3,11 +3,13 @@ require 'nokogiri'
 
 module FetchFiction
   class Fetch
-    @queue = :fetch_tieba
+    include Sidekiq::Worker
+    sidekiq_options :retry => false
+    sidekiq_options :queue => :fetch_tieba
 
     # fetch thread from tieba.baidu.com and check if new thread had come.
     # if true then enqueue the Send Class
-    def self.perform fiction_id
+    def perform fiction_id
       @update = false
       fiction = Fiction.find( :id => fiction_id )
       fiction_name = fiction.name
@@ -52,7 +54,7 @@ module FetchFiction
         end
       end
       if @update
-        Resque.enqueue Send,fiction_id
+        Send.perform_in 5, fiction_id
         $logger.info "Enqueue Send #{fiction_name}"
       else
         $logger.info "No update in Fetch #{fiction_name}"

@@ -6,7 +6,8 @@ require 'sequel'
 require 'pry'
 require 'nokogiri'
 require 'logger'
-require 'resque'
+require 'sidekiq'
+require './sidekiq'
 
 $logger = Logger.new($stdout)
 # connect database
