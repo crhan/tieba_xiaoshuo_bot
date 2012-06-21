@@ -2,13 +2,14 @@
 
 module FetchFiction
   class Send
-    @queue = :send
-    @retry_time = 0
+    include Sidekiq::Worker
+    sidekiq_options :queue => :send
+    sidekiq_options :retry => false
 
     # enqueued from Fetch class, get an fiction_id to check with.
     # find the chapter to send (max 5, restrict from CheckList#find_by_fiction method)
     # reconnect if IOError
-    def self.perform fiction_id
+    def perform fiction_id
       fiction = Fiction.find(:id => fiction_id)
       $logger.info "Running Send #{fiction.name}"
 
