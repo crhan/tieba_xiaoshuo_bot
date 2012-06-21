@@ -67,7 +67,7 @@ module FetchFiction
       @@roster.add_query_callback do |r|
         @@roster.items.each do |k,v|
           # create user if not exist
-          jid = v.jid.to_s
+          jid = v.jid.strip.to_s
           user = User.find_or_create(:account => jid)
           $logger.debug "user #{jid} found in rosterItem"
         end
@@ -79,17 +79,21 @@ module FetchFiction
       @@roster.add_subscription_request_callback do |item,presence|
         @@roster.accept_subscription(presence.from)
         # send back subscription request
-        @@cl.send(Presence.new.set_type(:subscribe).set_to(presence.from))
+        @@cl.send(Jabber::Presence.new.set_type(:subscribe).set_to(presence.from))
         # greating to the new friend
         @@cl.send(Jabber::Message.new(presence.from, "hello, my new friend~").set_type("chat"))
+        $logger.info "accept roster subscription from #{presence.from.to_s}"
+        User.find_or_create(:account => prensence.from.strip.to_s)
       end
     end
 
     def add_message_callback
       @@cl.add_message_callback do |m|
-        if m.type != :error and !m.body.nil?
-          m2 = Jabber::Message.new("crhan123@gmail.com", "#{m.body}")
-          $logger.info "send message to crhan123@gmail.com with #{m.body}"
+        if m.type = :chat and !m.body.nil?
+          user = User.find_or_create(:account => m.from.strip.to_s)
+          # TODO parse body
+          m2 = Jabber::Message.new(m.from, "#{m.body}")
+          $logger.info "send message to #{m.from.to_s} with #{m.body}"
           m2.type = m.type
           @@cl.send(m2)
           if m.body == 'exit'
