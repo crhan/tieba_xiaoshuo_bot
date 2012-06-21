@@ -11,7 +11,7 @@ module FetchFiction
         index :id
         String :account
         Fixnum :total_count, :default => 0
-        TrueClass :activate?, :default => true
+        TrueClass :active, :default => true
       end
       create_table
     end
@@ -25,5 +25,18 @@ module FetchFiction
     def subscriptions
       Subscription.filter(:user => self)
     end
+
+    def deactive
+      self.active = false
+      self.save
+    end
+    def active?
+      self.active
+    end
+    def deactive
+      !self.active
+    end
+
   end
+  User.set_dataset DB[:users].order(:id)
 end
