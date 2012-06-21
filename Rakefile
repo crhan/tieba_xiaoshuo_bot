@@ -6,6 +6,14 @@ require 'logger'
 CWD = File.dirname(__FILE__)
 task :default => :test
 
+desc "clear checklist and subscription"
+task :clear do
+  connect
+  require_model
+  Subscription.update(:check_id => nil)
+  CheckList.destroy
+end
+
 desc "Drop database if exist and migration the database to db/xiaoshuo.db"
 task :init do
   DB_PATH = File.join(CWD,"db","xiaoshuo.db")

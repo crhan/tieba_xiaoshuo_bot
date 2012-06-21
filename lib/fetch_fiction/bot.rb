@@ -36,7 +36,7 @@ module FetchFiction
 
     def connect
       # loggin to gtalk server
-      Jabber::debug = true
+      # Jabber::debug = true
       @@cl = Jabber::Client.new(@@myJID)
       auth
       # get the roster
