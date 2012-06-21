@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 # coding: utf-8
 require 'bundler/setup'
+require './lib/fetch_fiction/rexml_utf_patch'
 require 'xmpp4r'
 require 'sequel'
 require 'pry'
