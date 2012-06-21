@@ -35,5 +35,10 @@ module FetchFiction
       ! self.active
     end
 
+    def self.active_fictions
+      self.filter(:active).select(:fiction_id).group(:fiction_id)
+    end
+
   end
+  #Subscription.set_dataset DB[:subscriptions].filter(:active)
 end
