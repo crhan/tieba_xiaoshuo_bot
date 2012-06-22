@@ -122,16 +122,18 @@ module FetchFiction
         case comm
         when /^sub[\s ]/ # subscription request
           Worker::Sub.perform_async comm, user.id
+        when /^unsub[\s ]/ # unsubscription request
+          Worker::UnSub.perform_async comm, user.id
         else # what's this?
           # send default message
           binding.pry
-          raise CommandError, comm
+          raise ArgumentError, comm
         end
       else # what's this?
         # send default message
         raise TypeError, msg
       end
-    rescue CommandError => e
+    rescue ArgumentError => e
       Worker::LogError.perform_async self, e.message
       sendMsg user, %|what do you mean by sending "#{e.message}" to me?|;
     rescue TypeError => e

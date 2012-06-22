@@ -13,26 +13,21 @@ module FetchFiction
         fic_name = comm[3..-1].gsub(/[\s ]/,"")
         $logger.debug %|"#{user.account}" request to subscribe "#{fic_name}"|
         if fic_name.empty? # what do you mean by giving empty name?
-          raise ArgumentError, %|fiction name empty error, please specify a fiction name which can find in tieba.baidu.com|
+          raise ArgumentError, %|我怎么检测到了空的名字呢？你输入的是不是"#{comm}"?|
         end
-        # TODO check if the subscription is exists
-        if user.subscribed? fic_name
-          $bot.sendMsg user,%|你已经订阅了【fic_name】小说啦！|
+        if user.subscribe fic_name
+          $bot.sendMsg user,%|看到那【#{fic_name}】了吗？这本小说值得一战！|
+          Fiction.find(:name => fic_name).fetch # fetch now!
+          Worker::Send.perform_async fic.id, user.id # send to this user
+          $logger.info %|add "#{fic.name}" subsciption for user "#{user.account}"|
+          true
+        else
+          $bot.sendMsg user,%|订阅【#{fic_name}】小说失败， 你是不是已经订阅过了？|
           $logger.info %|User "#{user.account}" subscribe "#{fic_name}" again|
-          return false
+          false
         end
-        fic = if Fiction.find(:name => fic_name)
-                Fiction.find(:name=> fic_name)
-              else
-                $logger.info %|New Fiction "#{fic_name}" added|
-                Fiction.create(:name => fic_name)
-              end # finish get the Fiction object
-        user.add_fiction(fic)
-        fic.fetch # fetch now! TODO is there any need to async it?
-        Worker::Send.perform_async fic.id, user.id # send to this user
-        $logger.info %|add "#{fic.name}" subsciption for user "#{user.account}"|
       rescue ArgumentError => e
-        Worker::LogError.perform_async self, e.message
+        Worker::LogError.perform_async self, %|**#{user.name}** #{e.message}|
         sendMsg user, e.message
       end
     end

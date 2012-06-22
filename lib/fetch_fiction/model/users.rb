@@ -43,20 +43,34 @@ module FetchFiction
       !self.active
     end
 
-    # check if this user has subscriped given fiction
-    def subscribed? fiction
-      if fiction.instance_of? String
-        fic = Fiction.find(:name => fiction)
-        Subscription.filter(:fiction => fic, :user_id => self.id)
-      elsif fiction.instance_of? Fiction
-        Subscription.filter(:fiction => fiction, :user_id => self.id)
-      elsif fiction.instance_of? Fixnum
-        Subscription.filter(:fiction_id => fiction, :user_id => self.id)
+    # 订阅小说
+    # 成功返回 true
+    # 失败返回 false
+    def subscribe fiction_name
+      fic = Fiction.find_or_create(:name => fiction_name)
+      sub = Subscription.find(:user => self, :fiction => fic)
+      $logger.info %|**#{self.account}** 想订阅【#{fiction_name}】|
+      if sub # if subscription exists
+        sub.sub_active # active it (return false if it is active)
       else
-        raise ArgumentError, "Please send me a Fiction object, but you gave me a '#{fiction.inspect}', it's a #{fiction.class}"
+        self.add_fiction(fic)
+        true
       end
     end
 
+    # 退订小说
+    # 成功返回 true
+    # 失败返回 false
+    def unsubscribe fiction_name
+      $logger.info %|**#{self.account}** 想退订【#{fiction_name}】|
+      fic = Fiction.find(:name => fiction_name)
+      if fic # check if fiction exists
+        sub = Subscription.find(:user => self, :fiction => fic)
+        if sub # check if subscriptions exists
+          sub.sub_deactive # deactive it (return false if it is deactive already)
+        end
+      end
+    end
   end
   User.set_dataset DB[:users].order(:id)
 end

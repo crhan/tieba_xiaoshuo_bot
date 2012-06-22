@@ -28,17 +28,32 @@ module FetchFiction
       self.check_id || 0
     end
 
-    def unsubscribe
-      self.active = false
-      self.save
+    def sub_active
+      if self.active == true
+        false
+      else
+        self.active = true
+        self.save
+        true
+      end
+    end
+
+    def sub_deactive
+      if self.active == false
+        false
+      else
+        self.active = false
+        self.save
+        true
+      end
     end
 
     def active?
-      self.active
+      active
     end
 
     def deactive?
-      ! self.active
+      !active
     end
 
     def self.active_fictions
@@ -46,5 +61,4 @@ module FetchFiction
     end
 
   end
-  #Subscription.set_dataset DB[:subscriptions].filter(:active)
 end
