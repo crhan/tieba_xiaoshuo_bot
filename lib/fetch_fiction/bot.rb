@@ -121,25 +121,7 @@ module FetchFiction
         $logger.debug %|parsing command is "#{comm}"|
         case comm
         when /^sub[\s ]/ # subscription request
-          # remove all white space to get the name
-          fic_name = comm[3..-1].gsub(/[\s ]/,"")
-          $logger.debug %|"#{user.account}" request to subscribe "#{fic_name}"|
-          if fic_name.empty? # what do you mean by giving empty name?
-            raise TypeError,%|fiction name empty error, please specify a fiction name which can find in tieba.baidu.com|
-          end
-          # TODO check if the subscription is exists
-          user.subscribed? fic_name
-          fic = if Fiction.find(:name => fic_name)
-                  Fiction.find(:name=> fic_name)
-                else
-                  $logger.info "New Fiction #{fic_name} added"
-                  Fiction.create(:name => fic_name)
-                end
-          user.add_fiction(fic)
-          fic.fetch # fetch now! TODO is there any need to async it?
-          Worker::Send.perform_async fic.id, user.id # send to this user
-          $logger.info %|add "#{fic.name}" subsciption for user "#{user.account}"|
-          # TODO how to parse?
+          Worker::Sub.perform_async comm, user.id
         else # what's this?
           # send default message
           binding.pry
@@ -169,8 +151,5 @@ module FetchFiction
     @@instance.reconnect
     sleep 2
     retry
-  end
-
-  class CommandError < StandardError
   end
 end
