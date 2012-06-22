@@ -137,7 +137,7 @@ module FetchFiction
                 end
           user.add_fiction(fic)
           fic.fetch # fetch now! TODO is there any need to async it?
-          Send.perform_async fic.id, user.id # send to this user
+          Worker::Send.perform_async fic.id, user.id # send to this user
           $logger.info %|add "#{fic.name}" subsciption for user "#{user.account}"|
           # TODO how to parse?
         else # what's this?
@@ -150,10 +150,10 @@ module FetchFiction
         raise TypeError, msg
       end
     rescue CommandError => e
-      LogError.perform_async self, e.message
+      Worker::LogError.perform_async self, e.message
       sendMsg user, %|what do you mean by sending "#{e.message}" to me?|;
     rescue TypeError => e
-      LogError.perform_async self, e.message
+      Worker::LogError.perform_async self, e.message
       sendMsg user, e.message
     end
 
