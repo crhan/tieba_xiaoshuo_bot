@@ -29,14 +29,14 @@ module FetchFiction
       msg = Jabber::Message.new(send_to).set_type("chat")
       if content.instance_of? Array
         content.each do |e|
-          $bot.reconnect
+          @@instance.reconnect
           @@cl.send(msg.set_body(e.to_s))
-          $logger.debug "Send Message to #{send_to}, with #{e.to_s}"
+          $logger.info %|Send Message to "#{send_to}", with "#{e.to_s}"|
         end
       elsif content.instance_of? String
-        $bot.reconnect
+        @@instance.reconnect
         @@cl.send(msg.set_body(content))
-        $logger.debug "Send Message to #{send_to}, with #{content}"
+        $logger.info %|Send Message to "#{send_to}", with "#{content}"|
       end
     end
 
@@ -106,18 +106,55 @@ module FetchFiction
         if m.type = :chat and !m.body.nil?
           user = User.find_or_create(:account => m.from.strip.to_s)
           # TODO parse body
-          m2 = Jabber::Message.new(m.from, "#{m.body}")
-          $logger.info "send message to #{m.from.to_s} with #{m.body}"
-          m2.type = m.type
-          @@cl.send(m2)
-          if m.body == 'exit'
-            $logger.info "Exiting~~~"
-            m2 = Jabber::Message.new(m.from, "Exiting ...")
-            m2.type = m.type
-            @@cl.send(m2)
-          end
+          $logger.debug %|--start parsing "#{m.body}" from user "#{user.account}"|
+          parse_msg m.body, user
+          $logger.debug %|--stop parsing "#{m.body}" from user "#{user.account}"|
         end
       end
+    end
+
+    def parse_msg msg, user
+      if msg[0].eql? '-' # it is a command
+        $logger.debug %|found command "#{msg}"|
+        # continue parsing
+        comm = msg[1..-1]
+        $logger.debug %|parsing command is "#{comm}"|
+        case comm
+        when /^sub[\s ]/ # subscription request
+          # remove all white space to get the name
+          fic_name = comm[3..-1].gsub(/[\s ]/,"")
+          $logger.debug %|"#{user.account}" request to subscribe "#{fic_name}"|
+          if fic_name.empty? # what do you mean by giving empty name?
+            raise TypeError,%|fiction name empty error, please specify a fiction name which can find in tieba.baidu.com|
+          end
+          # TODO check if the subscription is exists
+          user.subscribed? fic_name
+          fic = if Fiction.find(:name => fic_name)
+                  Fiction.find(:name=> fic_name)
+                else
+                  $logger.info "New Fiction #{fic_name} added"
+                  Fiction.create(:name => fic_name)
+                end
+          user.add_fiction(fic)
+          fic.fetch # fetch now! TODO is there any need to async it?
+          Send.perform_async fic.id, user.id # send to this user
+          $logger.info %|add "#{fic.name}" subsciption for user "#{user.account}"|
+          # TODO how to parse?
+        else # what's this?
+          # send default message
+          binding.pry
+          raise CommandError, comm
+        end
+      else # what's this?
+        # send default message
+        raise TypeError, msg
+      end
+    rescue CommandError => e
+      LogError.perform_async self, e.message
+      sendMsg user, %|what do you mean by sending "#{e.message}" to me?|;
+    rescue TypeError => e
+      LogError.perform_async self, e.message
+      sendMsg user, e.message
     end
 
     public
@@ -132,5 +169,8 @@ module FetchFiction
     @@instance.reconnect
     sleep 2
     retry
+  end
+
+  class CommandError < StandardError
   end
 end
