@@ -43,6 +43,20 @@ module FetchFiction
       !self.active
     end
 
+    # check if this user has subscriped given fiction
+    def subscribed? fiction
+      if fiction.instance_of? String
+        fic = Fiction.find(:name => fiction)
+        Subscription.filter(:fiction => fic, :user_id => self.id)
+      elsif fiction.instance_of? Fiction
+        Subscription.filter(:fiction => fiction, :user_id => self.id)
+      elsif fiction.instance_of? Fixnum
+        Subscription.filter(:fiction_id => fiction, :user_id => self.id)
+      else
+        raise ArgumentError, "Please send me a Fiction object, but you gave me a '#{fiction.inspect}', it's a #{fiction.class}"
+      end
+    end
+
   end
   User.set_dataset DB[:users].order(:id)
 end

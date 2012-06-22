@@ -17,6 +17,12 @@ module FetchFiction
       create_table
     end
 
+    def validate
+      super
+      validates_unique [:user_id, :fiction_id]
+      # unique relations btw user and fiction
+    end
+
     # sorry for the misunderstood of check_list
     def checked_id
       self.check_id || 0
