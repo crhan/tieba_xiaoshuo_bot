@@ -124,6 +124,8 @@ module FetchFiction
           Worker::Sub.perform_async comm, user.id
         when /^unsub[\s ]/ # unsubscription request
           Worker::UnSub.perform_async comm, user.id
+        when /^list.*/
+          sendMsg user,user.list_subscriptions
         else # what's this?
           # send default message
           binding.pry
