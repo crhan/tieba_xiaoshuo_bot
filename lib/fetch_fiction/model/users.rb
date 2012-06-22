@@ -71,6 +71,17 @@ module FetchFiction
         end
       end
     end
+
+    def list_subscriptions
+      count = 1
+      sub = self.subscriptions.reverse_order(:active).order_append(:id)
+      msg = "你订阅了以下小说:\n"
+      sub.each do |e|
+        msg << %|\t#{count}. #{e.fiction.name}\t#{"（已退订）" if e.deactive?}\n|
+        count += 1
+      end
+      msg
+    end
   end
   User.set_dataset DB[:users].order(:id)
 end
