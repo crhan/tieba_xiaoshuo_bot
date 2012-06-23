@@ -1,7 +1,7 @@
 #coding: utf-8
 require 'nokogiri'
 
-module FetchFiction
+module TiebaXiaoshuoBot
   module Worker
     class Fetch
       include Sidekiq::Worker

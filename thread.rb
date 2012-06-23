@@ -17,8 +17,7 @@ Dir.glob "./lib/**/*.rb" do |f|
   require f
 end
 
-
-include FetchFiction
+include TiebaXiaoshuoBot
 include Jabber
 msg = Message.new("crhan123@gmail.com","haha")
 binding.pry

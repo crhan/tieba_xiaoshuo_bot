@@ -1,5 +1,7 @@
 # coding: utf-8
-module FetchFiction
+module TiebaXiaoshuoBot
+  require 'tieba_xiaoshuo_bot/patch/rexml_utf_patch'
+  require 'tieba_xiaoshuo_bot/patch/standard_error'
   require 'xmpp4r/client'
   require 'xmpp4r/roster'
   class Bot

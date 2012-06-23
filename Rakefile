@@ -56,7 +56,7 @@ end
 
 def require_model
   require './lib/fetch_fiction'
-  include FetchFiction
+  include TiebaXiaoshuoBot
   Dir.glob "./lib/**/model/*.rb" do |f|
     require f
   end

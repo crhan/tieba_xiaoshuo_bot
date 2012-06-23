@@ -1,12 +1,9 @@
 # coding: utf-8
+$:.unshift 'lib'
 require 'bundler/setup'
-require './lib/fetch_fiction/rexml_utf_patch'
-require './lib/fetch_fiction'
-Dir.glob './**/worker/*.rb' do |f|
-  require f
-end
-require './lib/fetch_fiction/bot'
-include FetchFiction
+require 'tieba_xiaoshuo_bot'
+
+include TiebaXiaoshuoBot
 $bot = Bot.instance
 
 $logger.debug Worker::CronFetch.sidekiq_options

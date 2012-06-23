@@ -1,5 +1,5 @@
 # coding: utf-8
-module FetchFiction
+module TiebaXiaoshuoBot
   class User < Sequel::Model
     many_to_many :fictions, :join_table => :subscriptions
     plugin :validation_helpers
