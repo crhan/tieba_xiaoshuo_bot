@@ -1,6 +1,6 @@
 # coding: utf-8
 
-module FetchFiction
+module TiebaXiaoshuoBot
   module Worker
     class Sub
       include Sidekiq::Worker
@@ -17,7 +17,8 @@ module FetchFiction
         end
         if user.subscribe fic_name
           $bot.sendMsg user,%|看到那【#{fic_name}】了吗？这本小说值得一战！|
-          Fiction.find(:name => fic_name).fetch # fetch now!
+          fic = Fiction.find(:name => fic_name)
+          fic.fetch
           Worker::Send.perform_async fic.id, user.id # send to this user
           $logger.info %|add "#{fic.name}" subsciption for user "#{user.account}"|
           true

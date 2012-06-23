@@ -1,5 +1,5 @@
 # coding: utf-8
-module FetchFiction
+module TiebaXiaoshuoBot
   module Worker
     class CronFetch
       include Sidekiq::Worker

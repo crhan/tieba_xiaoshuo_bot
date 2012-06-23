@@ -1,5 +1,5 @@
 # coding: utf-8
-module FetchFiction
+module TiebaXiaoshuoBot
   class CheckList < Sequel::Model
     plugin :validation_helpers
     plugin :schema

@@ -1,6 +1,6 @@
 # coding: utf-8
 require "uri"
-module FetchFiction
+module TiebaXiaoshuoBot
   class Fiction < Sequel::Model
     plugin :validation_helpers
     plugin :schema

@@ -1,6 +1,6 @@
 # coding: utf-8
 
-module FetchFiction
+module TiebaXiaoshuoBot
   module Worker
     class LogError
       include Sidekiq::Worker
