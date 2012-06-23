@@ -1,21 +1,18 @@
 # coding: utf-8
 module TiebaXiaoshuoBot
-  class Subscription < Sequel::Model
+  class Subscription < Model::Base
     plugin :validation_helpers
     plugin :schema
     many_to_one :user
     many_to_one :fiction
 
-    unless table_exists?
-      set_schema do
-        primary_key :id
-        foreign_key :fiction_id, :fictions
-        foreign_key :user_id, :users
-        foreign_key :check_id, :check_lists
-        TrueClass :active, :default => true
-      end
-      create_table
-    end
+    # primary_key :id
+    # foreign_key :fiction_id, :fictions
+    # foreign_key :user_id, :users
+    # foreign_key :check_id, :check_lists
+    # TrueClass :active, :default => true
+    # Time :created_at
+    # Time :updated_at
 
     def validate
       super
@@ -59,6 +56,6 @@ module TiebaXiaoshuoBot
     def self.active_fictions
       self.filter(:active).select(:fiction_id).group(:fiction_id)
     end
-
   end
+  Subscription.set_dataset DB[:subscriptions]
 end

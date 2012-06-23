@@ -1,20 +1,17 @@
 # coding: utf-8
 module TiebaXiaoshuoBot
-  class User < Sequel::Model
+  class User < Model::Base
     many_to_many :fictions, :join_table => :subscriptions
     plugin :validation_helpers
-    plugin :schema
 
-    unless table_exists?
-      set_schema do
-        primary_key :id
-        index :id
-        String :account
-        Fixnum :total_count, :default => 0
-        TrueClass :active, :default => true
-      end
-      create_table
-    end
+    # users schema
+    # primary_key :id
+    # index :id
+    # String :account
+    # Fixnum :total_count, :default => 0
+    # TrueClass :active, :default => true
+    # Time :created_at
+    # Time :updated_at
 
     def validate
       super
