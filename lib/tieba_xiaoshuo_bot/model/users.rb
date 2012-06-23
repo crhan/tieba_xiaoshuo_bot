@@ -6,7 +6,6 @@ module TiebaXiaoshuoBot
 
     plugin :validation_helpers
 
-    # users schema
     # primary_key :id
     # index :id
     # String :account

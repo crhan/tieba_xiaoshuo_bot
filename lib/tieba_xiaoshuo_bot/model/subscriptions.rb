@@ -2,7 +2,6 @@
 module TiebaXiaoshuoBot
   class Subscription < Model::Base
     plugin :validation_helpers
-    plugin :schema
     many_to_one :user
     many_to_one :fiction
 
