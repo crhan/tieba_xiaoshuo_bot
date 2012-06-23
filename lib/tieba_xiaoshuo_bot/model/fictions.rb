@@ -52,7 +52,7 @@ module TiebaXiaoshuoBot
             .map do |e|
               {
                 :thread_id   => e.attribute("href").value.match(/\d+/).to_s,
-                :thread_name => e.child.content.gsub(/^\s/,"")
+                :thread_name => e.child.content.gsub(/^.*?(?=第)/,"").gsub(/\s+/," ")
               }
             end
       if doc
@@ -63,6 +63,8 @@ module TiebaXiaoshuoBot
           $logger.info %|thread_id: #{thread_id},  threadname: #{thread_name}|
           # New charper find, set update flag
           unless CheckList.find(:thread_id => thread_id.to_i)
+            # find checklist has the same name and make them false
+            CheckList.filter(:thread_name => thread_name).update(:active => false)
             nc = CheckList.new
             nc.thread_id = thread_id.to_i
             nc.thread_name = thread_name
