@@ -32,5 +32,5 @@ module TiebaXiaoshuoBot
       end.order(:thread_id).reverse.limit(return_num).all.reverse
     end
   end
-  CheckList.set_dataset DB[:check_lists]
+  CheckList.set_dataset DB[:check_lists].filter(:active).order(:thread_id)
 end
