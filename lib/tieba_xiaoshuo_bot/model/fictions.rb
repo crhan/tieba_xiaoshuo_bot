@@ -19,6 +19,11 @@ module TiebaXiaoshuoBot
       validates_presence :name
     end
 
+    def before_save
+      super
+      self.encode_url = URI.encode name.encode("gbk")
+    end
+
     def subscriptions
       Subscription.filter(:fiction => self)
     end

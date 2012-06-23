@@ -51,7 +51,7 @@ module TiebaXiaoshuoBot
       if sub # if subscription exists
         sub.sub_active # active it (return false if it is active)
       else
-        self.add_fiction(fic)
+        Subscription.create(:user => self, :fiction => fic)
         true
       end
     end
