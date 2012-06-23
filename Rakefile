@@ -44,6 +44,14 @@ task :prepare do
 
 end
 
+desc "Do migrations!"
+task :migration do
+  DB_MIGRATION_PATH = File.join(CWD,"db","migration")
+  connect
+  Sequel.extension :migration
+  Sequel::Migrator.run($db,DB_MIGRATION_PATH)
+end
+
 desc "Just a test"
 task :test do
   puts __FILE__

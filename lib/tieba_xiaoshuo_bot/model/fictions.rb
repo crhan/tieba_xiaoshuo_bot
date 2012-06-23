@@ -1,29 +1,22 @@
 # coding: utf-8
 require "uri"
 module TiebaXiaoshuoBot
-  class Fiction < Sequel::Model
+  class Fiction < Model::Base
     plugin :validation_helpers
     plugin :schema
     many_to_many :users, :join_table => :subscriptions
     one_to_many :check_lists
 
-    unless table_exists?
-      set_schema do
-        primary_key :id
-        index :id
-        String :name
-        String :encode_url
-      end
-      create_table
-    end
+    # primary_key :id
+    # index :id
+    # String :name
+    # String :encode_url
+    # Time :created_at
+    # Time :updated_at
 
     def validate
       super
       validates_presence :name
-    end
-
-    def before_save
-      self.encode_url = URI.encode name.encode("gbk")
     end
 
     def subscriptions
@@ -87,4 +80,5 @@ module TiebaXiaoshuoBot
       update
     end
   end
+  Fiction.set_dataset DB[:fictions]
 end

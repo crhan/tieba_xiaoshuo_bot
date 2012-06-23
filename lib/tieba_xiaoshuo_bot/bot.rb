@@ -12,6 +12,30 @@ module TiebaXiaoshuoBot
       auto_update_roster_item
       auto_accept_subscription_resquest
       add_message_callback
+
+      @about_message = <<HERE
+Hi，我是小说推送酱，我住在主人家的电脑里，最喜欢做拿到最新鲜的“报纸”送给主人的事了啦～主人们有想看的小说可以告诉我，我会做主人最忠实的小女仆，第一时间获取更新信息，送给主人们哟～=w=～
+
+想知道怎么用我？赶快输入`-help`啦！
+HERE
+
+      @help_message= <<HERE
+欢迎使用XXXX，这里就是可用的命令列表啦～
+所有命令请以英文半角的短横开始哦～
+
+*****
+订阅小说: -sub <小说名>
+退订小说: -unsub <小说名>
+已订阅（过）的小说列表: -list
+使用体验反馈（未实现）: -feedback <内容>
+显示本帮助: -help
+卖萌: -about
+*****
+HERE
+    end
+
+    def help
+      # TODO send a HTML help message
     end
 
     def cl
@@ -97,9 +121,9 @@ module TiebaXiaoshuoBot
         # send back subscription request
         @@cl.send(Jabber::Presence.new.set_type(:subscribe).set_to(presence.from))
         # greating to the new friend
-        @@cl.send(Jabber::Message.new(presence.from, "hello, my new friend~").set_type("chat"))
-        $logger.info "accept roster subscription from #{presence.from.to_s}"
         User.find_or_create(:account => prensence.from.strip.to_s)
+        $logger.info "accept roster subscription from #{presence.from.to_s}"
+        @@cl.send(Jabber::Message.new(presence.from, @about_message).set_type("chat"))
       end
     end
 
@@ -128,6 +152,10 @@ module TiebaXiaoshuoBot
           Worker::UnSub.perform_async comm, user.id
         when /^list.*/
           sendMsg user,user.list_subscriptions
+        when /^help.*/
+          sendMsg user, @help_message
+        when /^about.*/
+          sendMsg user, @about_message
         else # what's this?
           # send default message
           binding.pry
