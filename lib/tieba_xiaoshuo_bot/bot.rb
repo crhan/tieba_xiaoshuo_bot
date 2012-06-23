@@ -155,7 +155,11 @@ HERE
         when /^feedback.*/
           content = comm[8..-1]
           $logger.info %|receive feed back from "#{user.account}", content: "#{content}"|
-          Feedback.create(:msg => content, :reporter => user)
+          if Feedback.create(:msg => content, :reporter => user)
+            sendMsg user, %|收到您的反馈啦～|
+          else
+            raise RuntimeError, "简直不能相信这里出错 "
+          end
         when /^help.*/
           sendMsg user, @help_message
         when /^about.*/
@@ -174,6 +178,9 @@ HERE
     rescue TypeError => e
       Worker::LogError.perform_async self, e.message
       sendMsg user, e.message
+    rescue RuntimeError => e
+      Worker::LogError.perform_async self,e.message, e.backtrace
+      sendMsg user, %|中奖，我也不知道为什么这里错了，不过这个错误已经记录下来啦！|
     end
 
     public
