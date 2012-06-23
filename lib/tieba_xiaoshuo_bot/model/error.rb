@@ -8,6 +8,7 @@ module TiebaXiaoshuoBot
     # index :id
     # String :class
     # String :msg
+    # String :backtrace
     # Time :created_at
     # Time :updated_at
 
