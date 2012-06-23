@@ -23,15 +23,15 @@ Sequel.migration do
     end
     create_table(:check_lists) do
       Integer :thread_id, :primary_key => true
-      foreign_key :fiction_id, :fictions
+      foreign_key :fiction_id, :fictions, :on_delete => :set_null
       String :thread_name
       Time :created_at
     end
     create_table(:subscriptions) do
       primary_key :id
-      foreign_key :fiction_id, :fictions
-      foreign_key :user_id, :users
-      foreign_key :check_id, :check_lists
+      foreign_key :fiction_id, :fictions, :on_delete => :set_null
+      foreign_key :user_id, :users, :on_delete => :set_null
+      foreign_key :check_id, :check_lists, :on_delete => :set_null
       TrueClass :active, :default => true
     end
   end
