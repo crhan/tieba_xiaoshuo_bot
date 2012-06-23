@@ -2,6 +2,8 @@
 module TiebaXiaoshuoBot
   class User < Model::Base
     many_to_many :fictions, :join_table => :subscriptions
+    one_to_many :feedbacks
+
     plugin :validation_helpers
 
     # users schema
