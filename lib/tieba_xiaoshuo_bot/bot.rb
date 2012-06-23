@@ -27,7 +27,7 @@ HERE
 订阅小说: -sub <小说名>
 退订小说: -unsub <小说名>
 已订阅（过）的小说列表: -list
-使用体验反馈（未实现）: -feedback <内容>
+使用体验反馈: -feedback <内容>
 显示本帮助: -help
 卖萌: -about
 *****
@@ -152,13 +152,16 @@ HERE
           Worker::UnSub.perform_async comm, user.id
         when /^list.*/
           sendMsg user,user.list_subscriptions
+        when /^feedback.*/
+          content = comm[8..-1]
+          $logger.info %|receive feed back from "#{user.account}", content: "#{content}"|
+          Feedback.create(:msg => content, :reporter => user)
         when /^help.*/
           sendMsg user, @help_message
         when /^about.*/
           sendMsg user, @about_message
         else # what's this?
           # send default message
-          binding.pry
           raise ArgumentError, comm
         end
       else # what's this?
