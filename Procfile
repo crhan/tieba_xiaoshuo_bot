@@ -1,3 +1,3 @@
-web:  bundle exec rackup config/config.ru
+web:  bundle exec rackup config/rack.conf.ru
 sidekiq: bundle exec sidekiq -r ./sidekiq.rb -q command -q fetch -q send -q cronJob -q log
 cron: bundle exec clockwork clock.rb
