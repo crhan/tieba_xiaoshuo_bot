@@ -1,4 +1,0 @@
-# database settings
-database:
-  adapter: postgres
-  database: fiction

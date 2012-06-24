@@ -5,8 +5,9 @@ module TiebaXiaoshuoBot
   require 'xmpp4r/client'
   require 'xmpp4r/roster'
   class Bot
-    @@myJID = Jabber::JID.new("crhan.xiaoshuo@gmail.com")
-    @@myPassword = 'GefEnsAnift('
+    gtalk = YAML.load_file("config/config.yml")["gtalk"]
+    @@myJID = Jabber::JID.new(gtalk["account"])
+    @@myPassword = gtalk["password"]
     def initialize
       connect
       auto_update_roster_item
