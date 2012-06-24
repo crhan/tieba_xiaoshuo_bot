@@ -59,7 +59,7 @@ end
 
 private
 def connect
-  $db = Sequel.connect(YAML.load_file("config/database.yml")["database"], :logger => Logger.new($stdout))
+  $db = Sequel.connect(YAML.load_file("config/config.yml")["database"], :logger => Logger.new($stdout))
 end
 
 def require_model

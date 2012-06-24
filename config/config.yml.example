@@ -1,0 +1,9 @@
+# database settings
+database:
+  adapter: postgres
+  database: fiction_test
+gtalk:
+  account: xxxxxx@gmail.com
+  password: yourPassword%
+logger:
+  db: log/db.log
