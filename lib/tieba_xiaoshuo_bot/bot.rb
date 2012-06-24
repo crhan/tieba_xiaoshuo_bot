@@ -5,8 +5,9 @@ module TiebaXiaoshuoBot
   require 'xmpp4r/client'
   require 'xmpp4r/roster'
   class Bot
-    @@myJID = Jabber::JID.new("crhan.xiaoshuo@gmail.com")
-    @@myPassword = 'GefEnsAnift('
+    gtalk = YAML.load_file("config/config.yml")["gtalk"]
+    @@myJID = Jabber::JID.new(gtalk["account"])
+    @@myPassword = gtalk["password"]
     def initialize
       connect
       auto_update_roster_item
@@ -20,7 +21,7 @@ Hi，我是小说推送酱，我住在主人家的电脑里，最喜欢做拿到
 HERE
 
       @help_message= <<HERE
-欢迎使用XXXX，这里就是可用的命令列表啦～
+欢迎使用XXXX（我到底叫什么啊喂），这里就是可用的命令列表啦～
 所有命令请以英文半角的短横开始哦～
 
 *****
