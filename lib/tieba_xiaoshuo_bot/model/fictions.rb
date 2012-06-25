@@ -69,7 +69,7 @@ module TiebaXiaoshuoBot
           # New charper find, set update flag
           unless CheckList.find(:thread_id => thread_id.to_i)
             # find checklist has the same name and make them false
-            CheckList.filter(:thread_name => thread_name).update(:active => false)
+            CheckList.filter(:thread_name => thread_name, :thread_id => self.id).update(:active => false)
             nc = CheckList.new
             nc.thread_id = thread_id.to_i
             nc.thread_name = thread_name
