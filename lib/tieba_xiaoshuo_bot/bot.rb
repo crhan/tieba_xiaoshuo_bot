@@ -122,7 +122,6 @@ HERE
         # send back subscription request
         @@cl.send(Jabber::Presence.new.set_type(:subscribe).set_to(presence.from))
         # greating to the new friend
-        User.find_or_create(:account => prensence.from.strip.to_s)
         $logger.info "accept roster subscription from #{presence.from.to_s}"
         @@cl.send(Jabber::Message.new(presence.from, @about_message).set_type("chat"))
       end
