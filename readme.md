@@ -1,6 +1,7 @@
 Howto?
 =====
 
+1. `yum install postgresql-devel libxslt-devel postgresql-server libxml2-devel`
 1. `bundle install`
 2. 改名 `mv config/config.yml{.example,}`
 3. 填上自己的信息（ **数据库使用 `Sequel` 作为 ORM gem** ）
