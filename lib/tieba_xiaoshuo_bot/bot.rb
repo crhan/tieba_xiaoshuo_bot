@@ -4,6 +4,7 @@ module TiebaXiaoshuoBot
   require 'tieba_xiaoshuo_bot/patch/standard_error'
   require 'xmpp4r/client'
   require 'xmpp4r/roster'
+  require 'tieba_xiaoshuo_bot/patch/gtalk_message_patch'
   class Bot
     gtalk = YAML.load_file("config/config.yml")["gtalk"]
     @@myJID = Jabber::JID.new(gtalk["account"])
@@ -53,7 +54,7 @@ HERE
            elsif user.instance_of? Fixnum
              User.find(:id => user).account
            end
-      msg = Jabber::Message.new(send_to).set_type("chat")
+      msg = Jabber::Message.new(send_to).set_type(:chat)
       if content.instance_of? Array
         content.each do |e|
           @@instance.reconnect
@@ -123,13 +124,13 @@ HERE
         @@cl.send(Jabber::Presence.new.set_type(:subscribe).set_to(presence.from))
         # greating to the new friend
         $logger.info "accept roster subscription from #{presence.from.to_s}"
-        @@cl.send(Jabber::Message.new(presence.from, @about_message).set_type("chat"))
+        @@cl.send(Jabber::Message.new(presence.from, @about_message).set_type(:chat))
       end
     end
 
     def add_message_callback
       @@cl.add_message_callback do |m|
-        if m.type = :chat and !m.body.nil?
+        if m.type == :chat and !m.body.nil?
           user = User.find_or_create(:account => m.from.strip.to_s)
           # TODO parse body
           $logger.debug %|--start parsing "#{m.body}" from user "#{user.account}"|

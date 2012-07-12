@@ -1,6 +1,7 @@
 Howto?
 =====
 
+1. `yum install postgresql-devel libxslt-devel postgresql-server libxml2-devel`
 1. `bundle install`
 2. 改名 `mv config/config.yml{.example,}`
 3. 填上自己的信息（ **数据库使用 `Sequel` 作为 ORM gem** ）
@@ -23,6 +24,10 @@ Try?
 
 ---------
 # Change Log
+
+## 1.1.0 / 2012-07-13 
+
+  * 增加gtalk XMPP extension 属性, 默认保存消息历史到 gtalk 服务器
 
 ## 1.0.6 / 2012-06-26 
 
