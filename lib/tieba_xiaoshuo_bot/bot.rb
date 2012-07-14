@@ -165,6 +165,8 @@ HERE
           sendMsg user, @help_message
         when /^about.*/
           sendMsg user, @about_message
+        when /^count.*/
+          sendMsg user, %/我已经给您传递了 "#{user.total_count}" 篇小说啦~/
         else # what's this?
           # send default message
           raise ArgumentError, comm
