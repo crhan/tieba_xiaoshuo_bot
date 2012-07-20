@@ -1,9 +1,10 @@
 # coding: utf-8
 module TiebaXiaoshuoBot
-  class CheckList < Model::Base
+  class CheckList < Sequel::Model
     plugin :validation_helpers
     plugin :schema
     many_to_one :fiction
+    include BaseModel
 
     # Integer :thread_id, :primary_key => true
     # foreign_key :fiction_id, :fictions
@@ -20,7 +21,7 @@ module TiebaXiaoshuoBot
     end
 
     # return 5 Fiction Thread object array by reverse order
-    def self.find_by_fiction fiction, return_num = 5
+    def self.find_by_fiction fiction, last_check
       if fiction.instance_of? Fiction
         self.filter(:fiction => fiction)
       elsif fiction.instance_of? Fixnum
@@ -29,7 +30,7 @@ module TiebaXiaoshuoBot
         self.filter(:fiction_id => fiction.to_i)
       else
         raise TypeError, "Need a Fiction object or a Fixnum refer to fiction_id. But I got a #{fiction.class}"
-      end.order(:thread_id).reverse.limit(return_num).all.reverse
+      end.filter{thread_id > last_check}
     end
   end
   CheckList.set_dataset DB[:check_lists].filter(:active).order(:thread_id)

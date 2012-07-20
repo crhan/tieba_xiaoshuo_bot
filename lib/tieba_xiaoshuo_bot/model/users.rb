@@ -1,10 +1,10 @@
 # coding: utf-8
 module TiebaXiaoshuoBot
-  class User < Model::Base
+  class User < Sequel::Model
     many_to_many :fictions, :join_table => :subscriptions
     one_to_many :feedbacks
-
     plugin :validation_helpers
+    include BaseModel
 
     # primary_key :id
     # index :id
@@ -24,21 +24,40 @@ module TiebaXiaoshuoBot
       Subscription.filter(:user => self)
     end
 
-    def sended
-      self.total_count += 1
+    def sended num = 1
+      self.total_count += num
       self.save
-      total_count
+      num
     end
 
-    def deactive
-      self.active = false
-      self.save
-    end
     def active?
       self.active
     end
-    def deactive
+
+    def deactive?
       !self.active
+    end
+
+    def switch_mode
+      if active?
+        self.active = false
+        self.save
+        "check"
+      elsif deactive?
+        self.active = true
+        self.save
+        "cron"
+      else
+        raise RuntimeError, "简直不能相信这里出错2"
+      end
+    end
+
+    def cron?
+      active?
+    end
+
+    def check?
+      deactive?
     end
 
     # 订阅小说
@@ -68,6 +87,10 @@ module TiebaXiaoshuoBot
           sub.sub_deactive # deactive it (return false if it is deactive already)
         end
       end
+    end
+
+    def active_fictions
+      Fiction.join(:subscriptions, :fiction_id => :id).filter(:active)
     end
 
     def list_subscriptions
