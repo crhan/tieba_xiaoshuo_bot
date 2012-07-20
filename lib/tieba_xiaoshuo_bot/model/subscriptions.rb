@@ -52,8 +52,14 @@ module TiebaXiaoshuoBot
       !active
     end
 
-    def self.active_fictions
-      self.filter(:active).select(:fiction_id).group(:fiction_id)
+    class << self
+      def active_fictions
+        self.filter(:active).select(:fiction_id).group(:fiction_id)
+      end
+
+      def active_users fiction_id
+        self.join(:users, :id=> :user_id).select(:fiction_id,:user_id,:check_id,:subscriptions__active,:users__active___user_active).filter(:users__active, :fiction_id => fiction_id)
+      end
     end
   end
   Subscription.set_dataset DB[:subscriptions]

@@ -25,10 +25,16 @@ HERE
 欢迎使用XXXX（我到底叫什么啊喂），这里就是可用的命令列表啦～
 所有命令请以英文半角的短横开始哦～
 
+推送小说有两种模式( 通过 `-mode` 指令切换):
+"cron" 模式即抓取到小说立即推送给您( 每 5 分钟检查一次新小说 )
+"check" 模式则需要您发送命令 `-check` 给我才会推送新收集到的小说给您哦
+
 *****
 订阅小说: -sub <小说名>
 退订小说: -unsub <小说名>
 已订阅（过）的小说列表: -list
+切换模式: -mode
+获取更新: -check
 使用体验反馈: -feedback <内容>
 显示本帮助: -help
 卖萌: -about
@@ -167,6 +173,16 @@ HERE
           sendMsg user, @about_message
         when /^count.*/
           sendMsg user, %/我已经给您传递了 "#{user.total_count}" 篇小说啦~/
+        when /^check.*/
+          if user.cron?
+            sendMsg user, %|请输入 `-mode` 切换到 "check" 模式再使用此命令哦~|
+          else
+            sendMsg user, %|小说章节检查中|
+            Worker::Send.perform_async nil, user.id, true
+            $logger.debug %|Worker::Send.perform_async nil, #{user.id}|
+          end
+        when /^mode.*/
+          sendMsg user, %|已将您切换到 "#{user.switch_mode}" 模式|
         else # what's this?
           # send default message
           raise ArgumentError, comm
