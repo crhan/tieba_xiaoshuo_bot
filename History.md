@@ -1,4 +1,12 @@
 
+1.2.0 / 2012-07-20 
+==================
+
+  * model 的 before_create 和 before_save 改为 mixin 形式混入. 正常 model 直接继承 Sequel::Model
+  * 加入等待, 确保在 `-check` 时候小说按照顺序分发
+  * 增加 `check` 模式和 `-check` 命令 使用 `-mode` 切换模式
+  * 增加 `-count` 命令
+
 1.1.0 / 2012-07-13 
 ==================
 

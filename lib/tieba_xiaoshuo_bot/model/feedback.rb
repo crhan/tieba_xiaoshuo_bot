@@ -1,7 +1,8 @@
 # coding: utf-8
 module TiebaXiaoshuoBot
-  class Feedback < Model::Base
+  class Feedback < Sequel::Model
     many_to_one :user
+    include BaseModel
 
     # primary_key :id
     # index:id

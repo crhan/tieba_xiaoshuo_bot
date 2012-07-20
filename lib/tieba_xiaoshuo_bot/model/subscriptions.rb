@@ -1,9 +1,10 @@
 # coding: utf-8
 module TiebaXiaoshuoBot
-  class Subscription < Model::Base
+  class Subscription < Sequel::Model
     plugin :validation_helpers
     many_to_one :user
     many_to_one :fiction
+    include BaseModel
 
     # primary_key :id
     # foreign_key :fiction_id, :fictions
@@ -52,8 +53,14 @@ module TiebaXiaoshuoBot
       !active
     end
 
-    def self.active_fictions
-      self.filter(:active).select(:fiction_id).group(:fiction_id)
+    class << self
+      def active_fictions
+        self.filter(:active).select(:fiction_id).group(:fiction_id)
+      end
+
+      def active_users fiction_id
+        self.join(:users, :id=> :user_id).select(:fiction_id,:user_id,:check_id,:subscriptions__active,:users__active___user_active).filter(:users__active, :fiction_id => fiction_id)
+      end
     end
   end
   Subscription.set_dataset DB[:subscriptions]

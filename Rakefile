@@ -1,7 +1,9 @@
 # encoding: utf-8
+$:.unshift 'lib'
 require 'bundler/setup'
 require 'sequel'
 require 'logger'
+require 'pry'
 
 CWD = File.dirname(__FILE__)
 task :default => :test
@@ -11,7 +13,7 @@ task :clear do
   connect
   require_model
   Subscription.update(:check_id => nil)
-  CheckList.destroy
+  #CheckList.destroy
 end
 
 desc "Drop database if exist and migration the database to db/xiaoshuo.db"
@@ -63,9 +65,6 @@ def connect
 end
 
 def require_model
-  require './lib/fetch_fiction'
+  require 'tieba_xiaoshuo_bot/model'
   include TiebaXiaoshuoBot
-  Dir.glob "./lib/**/model/*.rb" do |f|
-    require f
-  end
 end
