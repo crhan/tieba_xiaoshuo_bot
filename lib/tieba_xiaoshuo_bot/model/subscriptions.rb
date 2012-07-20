@@ -1,9 +1,10 @@
 # coding: utf-8
 module TiebaXiaoshuoBot
-  class Subscription < Model::Base
+  class Subscription < Sequel::Model
     plugin :validation_helpers
     many_to_one :user
     many_to_one :fiction
+    include BaseModel
 
     # primary_key :id
     # foreign_key :fiction_id, :fictions

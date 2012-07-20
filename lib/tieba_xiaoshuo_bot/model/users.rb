@@ -1,10 +1,10 @@
 # coding: utf-8
 module TiebaXiaoshuoBot
-  class User < Model::Base
+  class User < Sequel::Model
     many_to_many :fictions, :join_table => :subscriptions
     one_to_many :feedbacks
-
     plugin :validation_helpers
+    include BaseModel
 
     # primary_key :id
     # index :id
