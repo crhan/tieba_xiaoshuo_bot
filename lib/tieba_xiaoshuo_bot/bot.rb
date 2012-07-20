@@ -51,7 +51,7 @@ HERE
     end
 
     # receive an User object and an array of CheckList objects
-    def sendMsg user, content
+    def sendMsg user, content, wait = false
       # find the user account send to
       send_to = if user.instance_of? User
              user.account
@@ -72,6 +72,7 @@ HERE
         @@cl.send(msg.set_body(content))
         $logger.info %|Send Message to "#{send_to}", with "#{content}"|
       end
+      sleep 0.4 if wait
     end
 
     def auth
