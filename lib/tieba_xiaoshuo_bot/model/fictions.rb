@@ -1,11 +1,12 @@
 # coding: utf-8
 require "uri"
 module TiebaXiaoshuoBot
-  class Fiction < Model::Base
+  class Fiction < Sequel::Model
     plugin :validation_helpers
     plugin :schema
     many_to_many :users, :join_table => :subscriptions
     one_to_many :check_lists
+    include BaseModel
 
     # primary_key :id
     # index :id

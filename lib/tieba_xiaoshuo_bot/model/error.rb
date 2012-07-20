@@ -1,8 +1,9 @@
 # coding: utf-8
 module TiebaXiaoshuoBot
-  class Error < Model::Base
+  class Error < Sequel::Model
     plugin :validation_helpers
     plugin :schema
+    include BaseModel
 
     # primary_key :id
     # index :id

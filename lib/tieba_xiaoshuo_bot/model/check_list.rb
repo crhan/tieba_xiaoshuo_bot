@@ -1,9 +1,10 @@
 # coding: utf-8
 module TiebaXiaoshuoBot
-  class CheckList < Model::Base
+  class CheckList < Sequel::Model
     plugin :validation_helpers
     plugin :schema
     many_to_one :fiction
+    include BaseModel
 
     # Integer :thread_id, :primary_key => true
     # foreign_key :fiction_id, :fictions
