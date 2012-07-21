@@ -13,12 +13,12 @@ module TiebaXiaoshuoBot
       # reconnect if IOError
       def perform fiction_id, user_id = nil, info = false
         $logger.debug %|Running Worker::Send fiction_id = #{fiction_id}, user_id = #{user_id}, info = #{info}|
+        send = 0 if info # sum up the chapter send to user this time
         if user_id
           # if `user_id` is given then send all the active fiction for this user
           user = User.find(:id => user_id)
           fiction = user.active_fictions
           $logger.debug %|fiction =>\n #{fiction.all}|
-          send = 0 # sum up the chapter send to user this time
           $logger.debug %|send to single user "#{user.account}"|
         else
           fiction = Fiction.filter(:id => fiction_id)
@@ -42,7 +42,7 @@ module TiebaXiaoshuoBot
 
             # send message
             $bot.sendMsg e.user, send_lists.all, true# send_lists will be an array with .all
-            send += e.user.sended(send_lists.count) # counter += 1
+            send += e.user.sended(send_lists.count) if info # counter += 1
             # update checked_id
             last_id = send_lists.last.thread_id
             $logger.debug "#{e.inspect}.update(:check_id => #{last_id})"
