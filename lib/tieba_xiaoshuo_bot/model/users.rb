@@ -38,14 +38,23 @@ module TiebaXiaoshuoBot
       !self.active
     end
 
+    def mode
+      if cron?
+        "cron"
+      elsif check?
+        "check"
+      end
+    end
+
     def switch_mode
-      if active?
+      if cron?
         self.active = false
         self.save
         "check"
-      elsif deactive?
+      elsif check?
         self.active = true
         self.save
+        Worker::Send.perform_async nil, self.id, false
         "cron"
       else
         raise RuntimeError, "简直不能相信这里出错2"
