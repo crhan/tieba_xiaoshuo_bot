@@ -25,6 +25,10 @@ Try?
 ---------
 # Change Log
 
+## 1.2.1 / 2012-07-21 
+
+  * 修复 worker/send.rb:45 的 send NilClass 问题
+
 ## 1.2.0 / 2012-07-20 
 
   * model 的 before_create 和 before_save 改为 mixin 形式混入. 正常 model 直接继承 Sequel::Model
