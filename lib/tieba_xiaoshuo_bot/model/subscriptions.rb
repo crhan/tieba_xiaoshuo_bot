@@ -59,7 +59,7 @@ module TiebaXiaoshuoBot
       end
 
       def active_users fiction_id
-        self.join(:users, :id=> :user_id).select(:fiction_id,:user_id,:check_id,:subscriptions__active,:users__active___user_active).filter(:users__active, :fiction_id => fiction_id)
+        self.join(:users, :id=> :user_id).select(:subscriptions__id, :fiction_id,:user_id,:check_id,:subscriptions__active,:users__active___user_active).filter(:users__active, :fiction_id => fiction_id)
       end
     end
   end
