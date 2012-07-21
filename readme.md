@@ -25,6 +25,10 @@ Try?
 ---------
 # Change Log
 
+## 1.2.2 / 2012-07-21 
+
+  * 修复无法在 send.rb 中 Subscription.update(:check_id => last_id) 的问题
+
 ## 1.2.1 / 2012-07-21 
 
   * 修复 worker/send.rb:45 的 send NilClass 问题
