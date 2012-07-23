@@ -25,6 +25,10 @@ Try?
 ---------
 # Change Log
 
+## 1.2.3 / 2012-07-23 
+
+  * 切换模式命令改为 `-switch`, 查看模式为 `-mode`
+
 ## 1.2.2 / 2012-07-21 
 
   * 修复无法在 send.rb 中 Subscription.update(:check_id => last_id) 的问题
