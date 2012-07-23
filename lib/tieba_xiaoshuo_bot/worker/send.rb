@@ -46,8 +46,7 @@ module TiebaXiaoshuoBot
             # update checked_id
             last_id = send_lists.last.thread_id
             $logger.debug "#{e.inspect}.update(:check_id => #{last_id})"
-            e.check_id = last_id
-            e.save
+            e.update(:check_id => last_id)
           end
         end
         $bot.sendMsg user, %|本次为您送上了 #{send} 章小说~| if info
