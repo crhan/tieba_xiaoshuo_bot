@@ -214,6 +214,12 @@ HERE
 
     private_class_method :new
   rescue IOError => e
+    Worker::LogError.perform_async "IOError from Bot class: #{__LINE__}", e.message
+    @@instance.reconnect
+    sleep 2
+    retry
+  rescue Jabber::ServerDisconnected => e
+    Worker::LogError.perform_async "Jabber::ServerDisconnected from Bot class #{__LINE__}", e.message
     @@instance.reconnect
     sleep 2
     retry
