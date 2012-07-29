@@ -4,7 +4,8 @@ require 'bundler/setup'
 require 'tieba_xiaoshuo_bot'
 
 include TiebaXiaoshuoBot
-$bot = Bot.instance
+gtalk = YAML.load_file("config/config.yml")["gtalk"]
+$bot = Bot.new gtalk
 
 $logger.debug Worker::CronFetch.sidekiq_options
 $logger.debug Worker::OnlineCheck.sidekiq_options

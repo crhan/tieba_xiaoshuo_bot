@@ -6,11 +6,8 @@ module TiebaXiaoshuoBot
   require 'xmpp4r/roster'
   require 'tieba_xiaoshuo_bot/patch/gtalk_message_patch'
   class Bot
-    gtalk = YAML.load_file("config/config.yml")["gtalk"]
-    @@myJID = Jabber::JID.new(gtalk["account"])
-    @@myPassword = gtalk["password"]
-    def initialize
-      connect
+    def initialize gtalk
+      connect gtalk
       auto_update_roster_item
       auto_accept_subscription_resquest
       add_message_callback
@@ -46,10 +43,6 @@ HERE
       # TODO send a HTML help message
     end
 
-    def cl
-      @@cl
-    end
-
     # receive an User object and an array of CheckList objects
     def sendMsg user, content, wait = false
       # find the user account send to
@@ -63,38 +56,21 @@ HERE
       msg = Jabber::Message.new(send_to).set_type(:chat)
       if content.instance_of? Array
         content.each do |e|
-          @@instance.reconnect
-          @@cl.send(msg.set_body(e.to_s))
+          @cl.send(msg.set_body(e.to_s))
           $logger.info %|Send Message to "#{send_to}", with "#{e.to_s}"|
         end
       elsif content.instance_of? String
-        @@instance.reconnect
-        @@cl.send(msg.set_body(content))
+        @cl.send(msg.set_body(content))
         $logger.info %|Send Message to "#{send_to}", with "#{content}"|
       end
       sleep 0.4 if wait
     end
 
-    def auth
-      @@cl.connect
-      @@cl.auth(@@myPassword)
-      # set online
-      @@cl.send(Jabber::Presence.new)
-      $logger.info "Connected ! send messages to #{@@myJID.strip.to_s}."
-    end
-
-    def connect
-      # loggin to gtalk server
-      # Jabber::debug = true
-      @@cl = Jabber::Client.new(@@myJID)
-      auth
-      # get the roster
-      @@roster = Jabber::Roster::Helper.new(@@cl)
-    end
 
     def reconnect
-      if @@cl.is_disconnected?
-        @@instance.auth
+      if @cl.is_disconnected?
+        connect
+        Worker::LogError.perform_async "server reconnected", e.message
         true
       else
         false
@@ -102,19 +78,36 @@ HERE
     end
 
     def is_disconnected?
-      @@cl.is_disconnected?
+      @cl.is_disconnected?
     end
 
     def close
-      @@cl.close
+      @cl.close
     end
+
 
     private
 
+    def connect gtalk=nil
+      # loggin to gtalk server
+      # Jabber::debug = true
+      @gtalk ||= gtalk
+      @cl ||= Jabber::Client.new(@gtalk["account"])
+      @cl.connect
+      @cl.auth(@gtalk["password"])
+
+      # set online
+      @cl.send(Jabber::Presence.new)
+      $logger.info %|#{@gtalk['account']} Connected !|
+
+      # get the roster
+      @roster = Jabber::Roster::Helper.new(@cl)
+    end
+
     def auto_update_roster_item
       # register the exist subscription to User model
-      @@roster.add_query_callback do |r|
-        @@roster.items.each do |k,v|
+      @roster.add_query_callback do |r|
+        @roster.items.each do |k,v|
           # create user if not exist
           jid = v.jid.strip.to_s
           user = User.find_or_create(:account => jid)
@@ -125,21 +118,20 @@ HERE
 
     def auto_accept_subscription_resquest
       # accept any of the XMPP subscription request
-      @@roster.add_subscription_request_callback do |item,presence|
-        @@roster.accept_subscription(presence.from)
+      @roster.add_subscription_request_callback do |item,presence|
+        @roster.accept_subscription(presence.from)
         # send back subscription request
-        @@cl.send(Jabber::Presence.new.set_type(:subscribe).set_to(presence.from))
+        @cl.send(Jabber::Presence.new.set_type(:subscribe).set_to(presence.from))
         # greating to the new friend
         $logger.info "accept roster subscription from #{presence.from.to_s}"
-        @@cl.send(Jabber::Message.new(presence.from, @about_message).set_type(:chat))
+        @cl.send(Jabber::Message.new(presence.from, @about_message).set_type(:chat))
       end
     end
 
     def add_message_callback
-      @@cl.add_message_callback do |m|
+      @cl.add_message_callback do |m|
         if m.type == :chat and !m.body.nil?
           user = User.find_or_create(:account => m.from.strip.to_s)
-          # TODO parse body
           $logger.debug %|--start parsing "#{m.body}" from user "#{user.account}"|
           parse_msg m.body, user
           $logger.debug %|--stop parsing "#{m.body}" from user "#{user.account}"|
@@ -205,22 +197,14 @@ HERE
       sendMsg user, %|中奖，我也不知道为什么这里错了，不过这个错误已经记录下来啦！|
     end
 
-    public
-    @@instance = Bot.new
-
-    def self.instance
-      return @@instance
-    end
-
-    private_class_method :new
   rescue IOError => e
     Worker::LogError.perform_async "IOError from Bot class: #{__LINE__}", e.message
-    @@instance.reconnect
+    @cl.reconnect
     sleep 2
     retry
   rescue Jabber::ServerDisconnected => e
     Worker::LogError.perform_async "Jabber::ServerDisconnected from Bot class #{__LINE__}", e.message
-    @@instance.reconnect
+    @cl.reconnect
     sleep 2
     retry
   end
