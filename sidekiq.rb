@@ -14,4 +14,4 @@ $logger.debug Worker::Fetch.sidekiq_options
 $logger.debug Worker::LogError.sidekiq_options
 $logger.debug Worker::Sub.sidekiq_options
 $logger.debug Worker::UnSub.sidekiq_options
-#Jabber::debug = true
+Jabber::debug = true

@@ -6,6 +6,20 @@ module TiebaXiaoshuoBot
   require 'xmpp4r/roster'
   require 'tieba_xiaoshuo_bot/patch/gtalk_message_patch'
   class Bot
+    SHORT_COMMAND ={
+      "c" => 'check',
+      "s" => 'sub',
+      "us" => 'unsub',
+      "sm" => 'switch_mode',
+      "m" => 'show_mode',
+      "h" => 'help',
+      "?" => 'help',
+      "ls" => 'list',
+      "l" => 'list',
+      "fb" => 'feedback',
+      "ab" => "about",
+      "co" => "count",
+    }
     def initialize gtalk
       connect gtalk
       auto_update_roster_item
@@ -143,58 +157,99 @@ HERE
       if msg[0].eql? '-' # it is a command
         $logger.debug %|found command "#{msg}"|
         # continue parsing
-        comm = msg[1..-1]
+        args = msg[1..-1].split(/[\s  ]/)
+        comm = args.shift
+        $logger.debug %|args is #{args.to_s}|
+        $logger.debug %|comm is #{args.to_s}|
+        comm = SHORT_COMMAND[comm] if SHORT_COMMAND[comm]
         $logger.debug %|parsing command is "#{comm}"|
-        case comm
-        when /^sub[\s ]/ # subscription request
-          Worker::Sub.perform_async comm, user.id
-        when /^unsub[\s ]/ # unsubscription request
-          Worker::UnSub.perform_async comm, user.id
-        when /^list.*/
-          sendMsg user,user.list_subscriptions
-        when /^feedback.*/
-          content = comm[8..-1]
-          $logger.info %|receive feed back from "#{user.account}", content: "#{content}"|
-          if Feedback.create(:msg => content, :reporter => user)
-            sendMsg user, %|收到您的反馈啦～|
-          else
-            raise RuntimeError, "简直不能相信这里出错 "
-          end
-        when /^help.*/
-          sendMsg user, @help_message
-        when /^about.*/
-          sendMsg user, @about_message
-        when /^count.*/
-          sendMsg user, %/我已经给您传递了 "#{user.total_count}" 篇小说啦~/
-        when /^check.*/
-          if user.cron?
-            sendMsg user, %|请输入 `-mode` 切换到 "check" 模式再使用此命令哦~|
-          else
-            sendMsg user, %|小说章节检查中|
-            Worker::Send.perform_async nil, user.id, true
-            $logger.debug %|Worker::Send.perform_async nil, #{user.id}|
-          end
-        when /^mode.*/
-          sendMsg user, %|您现在处于 "#{user.mode}" 模式|
-        when /^switch.*/
-          sendMsg user, %|已将您切换到 "#{user.switch_mode}" 模式|
-        else # what's this?
-          # send default message
-          raise ArgumentError, comm
+        func_name = "func_" + comm
+        $logger.debug %|running "#{func_name} #{user} #{args.to_s}"|
+
+        begin
+          __send__ func_name, user, *args
+        rescue RuntimeError => e
+          Worker::LogError.perform_async user.account ,e.message, e.backtrace
+          sendMsg user, %|中奖，我也不知道为什么这里错了，不过这个错误已经记录下来啦！|
         end
-      else # what's this?
-        # send default message
-        raise ArgumentError, msg
+      else
+        Worker::LogError.perform_async user.account, msg
+        sendMsg user, %|请输入(不包括引号) '-?' 查看帮助|
       end
-    rescue ArgumentError => e
-      Worker::LogError.perform_async user.account, e.message
-      sendMsg user, %|what do you mean by sending "#{e.message}" to me?|;
-    rescue TypeError => e
-      Worker::LogError.perform_async self, e.message
-      sendMsg user, e.message
-    rescue RuntimeError => e
-      Worker::LogError.perform_async self,e.message, e.backtrace
-      sendMsg user, %|中奖，我也不知道为什么这里错了，不过这个错误已经记录下来啦！|
+    end
+
+    def method_missing method, *args
+      user = args[0]
+      content = args[1..-1].join(" ")
+      Worker::LogError.perform_async user.account, %|-#{method} #{content}|
+      sendMsg user, %|您输入的 `-#{method[5..-1]} #{ content }` 似乎不是有效的命令, 请参阅帮助(输入`-?`)|
+    end
+
+    # args[0] => user
+    # args[1] => sub fiction_name
+    def func_sub *args
+      Worker::Sub.perform_async args[1], args[0].id
+    end
+
+    # args[0] => user
+    # args[1] => unsub fiction_name
+    def func_unsub *args
+      Worker::UnSub.perform_async args[1], args[0].id
+    end
+
+    # args[0] => user
+    def func_check *args
+      user = args[0]
+      if user.cron?
+        sendMsg user, %|请输入 `-mode` 切换到 "check" 模式再使用此命令哦~|
+      else
+        sendMsg user, %|小说章节检查中|
+        Worker::Send.perform_async nil, user.id, true
+        $logger.debug %|Worker::Send.perform_async nil, #{user.id}|
+      end
+    end
+
+    # args[0] => user
+    def func_show_mode *args
+      user = args[0]
+      sendMsg user, %|您现在处于 "#{user.mode}" 模式|
+    end
+
+    # args[0] => user
+    def func_switch_mode *args
+      user = args[0]
+      sendMsg user, %|已将您切换到 "#{user.switch_mode}" 模式|
+    end
+
+    def feedback *args
+      user = args[0]
+      content = args[1..-1]
+      $logger.info %|receive feed back from "#{user.account}", content: "#{content}"|
+      if Feedback.create(:msg => content, :reporter => user)
+        sendMsg user, %|收到您的反馈啦～|
+      else
+        raise RuntimeError, "简直不能相信这里出错 "
+      end
+    end
+
+    # args[0] => user
+    def func_list *args
+      sendMsg args[0], args[0].list_subscriptions
+    end
+
+    # args[0] => user
+    def func_help *args
+      sendMsg args[0], @help_message
+    end
+
+    # args[0] => user
+    def func_about *args
+      sendMsg args[0], @about_message
+    end
+
+    # args[0] => user
+    def func_count *args
+      sendMsg args[0], %/我已经给您传递了 "#{user.total_count}" 篇小说啦~/
     end
 
   rescue IOError => e
