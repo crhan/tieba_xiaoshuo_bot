@@ -192,10 +192,10 @@ HERE
         end
       else # what's this?
         # send default message
-        raise TypeError, msg
+        raise ArgumentError, msg
       end
     rescue ArgumentError => e
-      Worker::LogError.perform_async self, e.message
+      Worker::LogError.perform_async user.account, e.message
       sendMsg user, %|what do you mean by sending "#{e.message}" to me?|;
     rescue TypeError => e
       Worker::LogError.perform_async self, e.message
