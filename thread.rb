@@ -10,5 +10,7 @@ $logger = Logger.new($stdout)
 
 include TiebaXiaoshuoBot
 include Jabber
-Jabber::debug = true
+#Jabber::debug = true
+gtalk = YAML.load_file("config/config.yml")["gtalk"]
+$bot = Bot.new gtalk
 binding.pry
