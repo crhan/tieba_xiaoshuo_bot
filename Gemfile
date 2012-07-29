@@ -13,7 +13,6 @@ gem 'activesupport', "~> 3.2.6"
 
 # queue and cron job
 gem "sidekiq", "~> 2.0.2"
-gem "whenever", "~> 0.7.3"
 gem 'clockwork'
 
 # parse HTML
@@ -21,6 +20,11 @@ gem "nokogiri", "~> 1.5.4"
 
 # better irb
 gem "pry"
+gem "pry-nav"
 
 # runner
 gem "foreman", "~> 0.47.0"
+
+# rSpec-test
+gem 'rspec'
+gem 'cucumber'
