@@ -5,6 +5,7 @@ require 'bundler/setup'
 require 'tieba_xiaoshuo_bot'
 require 'tieba_xiaoshuo_bot/patch/gtalk_message_patch'
 require 'pry'
+require 'pry-nav'
 
 $logger = Logger.new($stdout)
 
