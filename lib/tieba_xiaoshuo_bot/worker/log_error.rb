@@ -10,7 +10,7 @@ module TiebaXiaoshuoBot
       def perform err_class, msg, backtrace = nil
         $logger.warn "errorLog created by :class => #{err_class}, :msg => #{msg}"
         $logger.warn "and back trace:\n#{backtrace}" if backtrace
-        new_e = Error.create(:class => err_class, :msg => msg, :backtrace => nil)
+        new_e = Error.create(:class => err_class, :msg => msg, :backtrace => backtrace)
       end
     end
   end
