@@ -25,6 +25,13 @@ Try?
 ---------
 # Change Log
 
+## 1.2.4 / 2012-07-31 
+
+  * 重构 bot.rb 并添加了短命令
+  * Bot 不再使用单例模式, 并且尝试掉线后自动重连并重试发送
+  * handle `Jabber::ServerDisconnected` and log it
+  * Error log will log the hooked user now
+
 ## 1.2.3 / 2012-07-23 
 
   * 切换模式命令改为 `-switch`, 查看模式为 `-mode`
