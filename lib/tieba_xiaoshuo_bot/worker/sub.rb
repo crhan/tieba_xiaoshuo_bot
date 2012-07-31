@@ -7,13 +7,12 @@ module TiebaXiaoshuoBot
       sidekiq_options :queue => :command
       sidekiq_options :retry => false
 
-      def perform comm, user_id
+      def perform fic_name, user_id
         user = User.find(:id => user_id)
         # remove all white space to get the name
-        fic_name = comm[3..-1].gsub(/[\s ]/,"")
         $logger.debug %|"#{user.account}" request to subscribe "#{fic_name}"|
         if fic_name.empty? # what do you mean by giving empty name?
-          raise ArgumentError, %|我怎么检测到了空的名字呢？你输入的是不是"#{comm}"?|
+          raise ArgumentError, %|我怎么检测到了空的名字呢？|
         end
         if user.subscribe fic_name
           $bot.sendMsg user,%|看到那【#{fic_name}】了吗？这本小说值得一战！|

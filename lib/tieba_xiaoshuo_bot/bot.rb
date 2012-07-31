@@ -6,11 +6,22 @@ module TiebaXiaoshuoBot
   require 'xmpp4r/roster'
   require 'tieba_xiaoshuo_bot/patch/gtalk_message_patch'
   class Bot
-    gtalk = YAML.load_file("config/config.yml")["gtalk"]
-    @@myJID = Jabber::JID.new(gtalk["account"])
-    @@myPassword = gtalk["password"]
-    def initialize
-      connect
+    SHORT_COMMAND ={
+      "c" => 'check',
+      "s" => 'sub',
+      "us" => 'unsub',
+      "sm" => 'switch_mode',
+      "m" => 'show_mode',
+      "h" => 'help',
+      "?" => 'help',
+      "ls" => 'list',
+      "l" => 'list',
+      "fb" => 'feedback',
+      "ab" => "about",
+      "co" => "count",
+    }
+    def initialize gtalk
+      connect gtalk
       auto_update_roster_item
       auto_accept_subscription_resquest
       add_message_callback
@@ -46,10 +57,6 @@ HERE
       # TODO send a HTML help message
     end
 
-    def cl
-      @@cl
-    end
-
     # receive an User object and an array of CheckList objects
     def sendMsg user, content, wait = false
       # find the user account send to
@@ -63,38 +70,21 @@ HERE
       msg = Jabber::Message.new(send_to).set_type(:chat)
       if content.instance_of? Array
         content.each do |e|
-          @@instance.reconnect
-          @@cl.send(msg.set_body(e.to_s))
+          @cl.send(msg.set_body(e.to_s))
           $logger.info %|Send Message to "#{send_to}", with "#{e.to_s}"|
         end
       elsif content.instance_of? String
-        @@instance.reconnect
-        @@cl.send(msg.set_body(content))
+        @cl.send(msg.set_body(content))
         $logger.info %|Send Message to "#{send_to}", with "#{content}"|
       end
       sleep 0.4 if wait
     end
 
-    def auth
-      @@cl.connect
-      @@cl.auth(@@myPassword)
-      # set online
-      @@cl.send(Jabber::Presence.new)
-      $logger.info "Connected ! send messages to #{@@myJID.strip.to_s}."
-    end
-
-    def connect
-      # loggin to gtalk server
-      # Jabber::debug = true
-      @@cl = Jabber::Client.new(@@myJID)
-      auth
-      # get the roster
-      @@roster = Jabber::Roster::Helper.new(@@cl)
-    end
 
     def reconnect
-      if @@cl.is_disconnected?
-        @@instance.auth
+      if @cl.is_disconnected?
+        connect
+        Worker::LogError.perform_async "server reconnected", e.message
         true
       else
         false
@@ -102,19 +92,36 @@ HERE
     end
 
     def is_disconnected?
-      @@cl.is_disconnected?
+      @cl.is_disconnected?
     end
 
     def close
-      @@cl.close
+      @cl.close
     end
+
 
     private
 
+    def connect gtalk=nil
+      # loggin to gtalk server
+      # Jabber::debug = true
+      @gtalk ||= gtalk
+      @cl ||= Jabber::Client.new(@gtalk["account"])
+      @cl.connect
+      @cl.auth(@gtalk["password"])
+
+      # set online
+      @cl.send(Jabber::Presence.new)
+      $logger.info %|#{@gtalk['account']} Connected !|
+
+      # get the roster
+      @roster = Jabber::Roster::Helper.new(@cl)
+    end
+
     def auto_update_roster_item
       # register the exist subscription to User model
-      @@roster.add_query_callback do |r|
-        @@roster.items.each do |k,v|
+      @roster.add_query_callback do |r|
+        @roster.items.each do |k,v|
           # create user if not exist
           jid = v.jid.strip.to_s
           user = User.find_or_create(:account => jid)
@@ -125,21 +132,20 @@ HERE
 
     def auto_accept_subscription_resquest
       # accept any of the XMPP subscription request
-      @@roster.add_subscription_request_callback do |item,presence|
-        @@roster.accept_subscription(presence.from)
+      @roster.add_subscription_request_callback do |item,presence|
+        @roster.accept_subscription(presence.from)
         # send back subscription request
-        @@cl.send(Jabber::Presence.new.set_type(:subscribe).set_to(presence.from))
+        @cl.send(Jabber::Presence.new.set_type(:subscribe).set_to(presence.from))
         # greating to the new friend
         $logger.info "accept roster subscription from #{presence.from.to_s}"
-        @@cl.send(Jabber::Message.new(presence.from, @about_message).set_type(:chat))
+        @cl.send(Jabber::Message.new(presence.from, @about_message).set_type(:chat))
       end
     end
 
     def add_message_callback
-      @@cl.add_message_callback do |m|
+      @cl.add_message_callback do |m|
         if m.type == :chat and !m.body.nil?
           user = User.find_or_create(:account => m.from.strip.to_s)
-          # TODO parse body
           $logger.debug %|--start parsing "#{m.body}" from user "#{user.account}"|
           parse_msg m.body, user
           $logger.debug %|--stop parsing "#{m.body}" from user "#{user.account}"|
@@ -151,70 +157,109 @@ HERE
       if msg[0].eql? '-' # it is a command
         $logger.debug %|found command "#{msg}"|
         # continue parsing
-        comm = msg[1..-1]
+        args = msg[1..-1].split(/[\s  ]/)
+        comm = args.shift
+        $logger.debug %|args is #{args.to_s}|
+        $logger.debug %|comm is #{args.to_s}|
+        comm = SHORT_COMMAND[comm] if SHORT_COMMAND[comm]
         $logger.debug %|parsing command is "#{comm}"|
-        case comm
-        when /^sub[\s ]/ # subscription request
-          Worker::Sub.perform_async comm, user.id
-        when /^unsub[\s ]/ # unsubscription request
-          Worker::UnSub.perform_async comm, user.id
-        when /^list.*/
-          sendMsg user,user.list_subscriptions
-        when /^feedback.*/
-          content = comm[8..-1]
-          $logger.info %|receive feed back from "#{user.account}", content: "#{content}"|
-          if Feedback.create(:msg => content, :reporter => user)
-            sendMsg user, %|收到您的反馈啦～|
-          else
-            raise RuntimeError, "简直不能相信这里出错 "
-          end
-        when /^help.*/
-          sendMsg user, @help_message
-        when /^about.*/
-          sendMsg user, @about_message
-        when /^count.*/
-          sendMsg user, %/我已经给您传递了 "#{user.total_count}" 篇小说啦~/
-        when /^check.*/
-          if user.cron?
-            sendMsg user, %|请输入 `-mode` 切换到 "check" 模式再使用此命令哦~|
-          else
-            sendMsg user, %|小说章节检查中|
-            Worker::Send.perform_async nil, user.id, true
-            $logger.debug %|Worker::Send.perform_async nil, #{user.id}|
-          end
-        when /^mode.*/
-          sendMsg user, %|您现在处于 "#{user.mode}" 模式|
-        when /^switch.*/
-          sendMsg user, %|已将您切换到 "#{user.switch_mode}" 模式|
-        else # what's this?
-          # send default message
-          raise ArgumentError, comm
+        func_name = "func_" + comm
+        $logger.debug %|running "#{func_name} #{user} #{args.to_s}"|
+
+        begin
+          __send__ func_name, user, *args
+        rescue RuntimeError => e
+          Worker::LogError.perform_async user.account ,e.message, e.backtrace
+          sendMsg user, %|中奖，我也不知道为什么这里错了，不过这个错误已经记录下来啦！|
         end
-      else # what's this?
-        # send default message
-        raise TypeError, msg
+      else
+        Worker::LogError.perform_async user.account, msg
+        sendMsg user, %|请输入(不包括引号) '-?' 查看帮助|
       end
-    rescue ArgumentError => e
-      Worker::LogError.perform_async self, e.message
-      sendMsg user, %|what do you mean by sending "#{e.message}" to me?|;
-    rescue TypeError => e
-      Worker::LogError.perform_async self, e.message
-      sendMsg user, e.message
-    rescue RuntimeError => e
-      Worker::LogError.perform_async self,e.message, e.backtrace
-      sendMsg user, %|中奖，我也不知道为什么这里错了，不过这个错误已经记录下来啦！|
     end
 
-    public
-    @@instance = Bot.new
-
-    def self.instance
-      return @@instance
+    def method_missing method, *args
+      user = args[0]
+      content = args[1..-1].join(" ")
+      Worker::LogError.perform_async user.account, %|-#{method} #{content}|
+      sendMsg user, %|您输入的 `-#{method[5..-1]} #{ content }` 似乎不是有效的命令, 请参阅帮助(输入`-?`)|
     end
 
-    private_class_method :new
+    # args[0] => user
+    # args[1] => sub fiction_name
+    def func_sub *args
+      Worker::Sub.perform_async args[1], args[0].id
+    end
+
+    # args[0] => user
+    # args[1] => unsub fiction_name
+    def func_unsub *args
+      Worker::UnSub.perform_async args[1], args[0].id
+    end
+
+    # args[0] => user
+    def func_check *args
+      user = args[0]
+      if user.cron?
+        sendMsg user, %|请输入 `-mode` 切换到 "check" 模式再使用此命令哦~|
+      else
+        sendMsg user, %|小说章节检查中|
+        Worker::Send.perform_async nil, user.id, true
+        $logger.debug %|Worker::Send.perform_async nil, #{user.id}|
+      end
+    end
+
+    # args[0] => user
+    def func_show_mode *args
+      user = args[0]
+      sendMsg user, %|您现在处于 "#{user.mode}" 模式|
+    end
+
+    # args[0] => user
+    def func_switch_mode *args
+      user = args[0]
+      sendMsg user, %|已将您切换到 "#{user.switch_mode}" 模式|
+    end
+
+    def feedback *args
+      user = args[0]
+      content = args[1..-1]
+      $logger.info %|receive feed back from "#{user.account}", content: "#{content}"|
+      if Feedback.create(:msg => content, :reporter => user)
+        sendMsg user, %|收到您的反馈啦～|
+      else
+        raise RuntimeError, "简直不能相信这里出错 "
+      end
+    end
+
+    # args[0] => user
+    def func_list *args
+      sendMsg args[0], args[0].list_subscriptions
+    end
+
+    # args[0] => user
+    def func_help *args
+      sendMsg args[0], @help_message
+    end
+
+    # args[0] => user
+    def func_about *args
+      sendMsg args[0], @about_message
+    end
+
+    # args[0] => user
+    def func_count *args
+      sendMsg args[0], %/我已经给您传递了 "#{user.total_count}" 篇小说啦~/
+    end
+
   rescue IOError => e
-    @@instance.reconnect
+    Worker::LogError.perform_async "IOError from Bot class: #{__LINE__}", e.message
+    @cl.reconnect
+    sleep 2
+    retry
+  rescue Jabber::ServerDisconnected => e
+    Worker::LogError.perform_async "Jabber::ServerDisconnected from Bot class #{__LINE__}", e.message
+    @cl.reconnect
     sleep 2
     retry
   end
