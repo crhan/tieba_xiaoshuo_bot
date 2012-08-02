@@ -75,4 +75,4 @@
   * 使用 `Sequel` 作为 ORM 组件
   * 使用 `PostgreSQL` 做数据存储
   * REXML bug fix: 使用
-  	(xmpp4r/issues/3)[https://github.com/ln/xmpp4r/issues/3#issuecomment-1739952] 补丁使 REXML 能正确处理 UTF 字符
+  	[ xmpp4r/issues/3 ]( https://github.com/ln/xmpp4r/issues/3#issuecomment-1739952 ) 补丁使 REXML 能正确处理 UTF 字符
