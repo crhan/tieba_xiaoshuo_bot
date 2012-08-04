@@ -21,9 +21,15 @@ module TiebaXiaoshuoBot
     end
 
     # sorry for the misunderstood of check_list
-    def checked_id
+    def last_id
       self.check_id || 0
     end
+
+    def update_last last_id
+      self.update(:check_id => last_id)
+    end
+
+    alias checked_id last_id
 
     def sub_active
       if self.active == true

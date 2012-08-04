@@ -2,7 +2,7 @@
 module TiebaXiaoshuoBot
   class User < Sequel::Model
     many_to_many :fictions, :join_table => :subscriptions
-    one_to_many :feedbacks
+    one_to_many :feedbacks, :key => :reporter_id
     plugin :validation_helpers
     include BaseModel
 
@@ -22,6 +22,26 @@ module TiebaXiaoshuoBot
 
     def subscriptions
       Subscription.filter(:user => self)
+    end
+
+    def send_prepare options={}
+      fiction_id = options[:fiction_id]
+      send_count = 0
+      send_msg = ""
+
+      fiction_list(fiction_id).each do |fiction|
+        sub = subscription(fiction)
+        last_chapter = nil
+        chapters(fiction, sub.last_id).each do |cl|
+          send_count += 1
+          send_msg << "\n" unless send_msg.empty?
+          send_msg << cl.to_s
+          last_chapter = cl
+        end
+        sub.update_last(last_chapter.thread_id) if last_chapter
+      end
+      self.sended(send_count)
+      [send_msg, send_count]
     end
 
     def sended num = 1
@@ -112,6 +132,24 @@ module TiebaXiaoshuoBot
       end
       msg
     end
+
+    private
+    def chapters fiction, last_id
+      CheckList.find_by_fiction(fiction, last_id)
+    end
+
+    def subscription fiction
+      Subscription.find(:user => self, :fiction => fiction)
+    end
+
+    def fiction_list fiction_id = nil
+      if fiction_id
+        Fiction.filter(:id => fiction_id)
+      else
+        self.active_fictions
+      end
+    end
+
   end
   User.set_dataset DB[:users].order(:id)
 end
