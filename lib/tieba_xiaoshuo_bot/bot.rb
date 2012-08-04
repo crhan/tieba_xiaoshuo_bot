@@ -180,7 +180,7 @@ HERE
 
     def method_missing method, *args
       user = args[0]
-      content = args[1..-1].join(" ")
+      content = args[1..-1].join(" ") if args
       Worker::LogError.perform_async user.account, %|-#{method} #{content}|
       sendMsg user, %|您输入的 `-#{method[5..-1]} #{ content }` 似乎不是有效的命令, 请参阅帮助(输入`-?`)|
     end
@@ -221,7 +221,7 @@ HERE
       sendMsg user, %|已将您切换到 "#{user.switch_mode}" 模式|
     end
 
-    def feedback *args
+    def func_feedback *args
       user = args[0]
       content = args[1..-1]
       $logger.info %|receive feed back from "#{user.account}", content: "#{content}"|
