@@ -50,6 +50,14 @@ module TiebaXiaoshuoBot
       num
     end
 
+    def cron?
+      active?
+    end
+
+    def check?
+      deactive?
+    end
+
     def active?
       self.active
     end
@@ -81,42 +89,28 @@ module TiebaXiaoshuoBot
       end
     end
 
-    def cron?
-      active?
-    end
-
-    def check?
-      deactive?
-    end
-
     # 订阅小说
     # 成功返回 true
-    # 失败返回 false
+    # 异常返回 false
     def subscribe fiction_name
-      fic = Fiction.find_or_create(:name => fiction_name)
-      sub = Subscription.find(:user => self, :fiction => fic)
-      $logger.info %|**#{self.account}** 想订阅【#{fiction_name}】|
-      if sub # if subscription exists
-        sub.sub_active # active it (return false if it is active)
-      else
-        Subscription.create(:user => self, :fiction => fic)
-        true
-      end
+      create_sub(fiction_name).active_it
+    rescue => e
+      false
     end
 
     # 退订小说
     # 成功返回 true
     # 失败返回 false
     def unsubscribe fiction_name
-      $logger.info %|**#{self.account}** 想退订【#{fiction_name}】|
-      fic = Fiction.find(:name => fiction_name)
-      if fic # check if fiction exists
-        sub = Subscription.find(:user => self, :fiction => fic)
-        if sub # check if subscriptions exists
-          sub.sub_deactive # deactive it (return false if it is deactive already)
-        end
+      begin
+        get_sub(fiction_name).deactive_it
+      rescue =>e
+        false
       end
     end
+
+    alias sub_fiction subscribe
+    alias unsub_fiction unsubscribe
 
     def active_fictions
       Fiction.join(:subscriptions, :fiction_id => :id).filter(:active)
@@ -133,6 +127,8 @@ module TiebaXiaoshuoBot
       msg
     end
 
+    alias list_sub list_subscriptions
+
     private
     def chapters fiction, last_id
       CheckList.find_by_fiction(fiction, last_id)
@@ -148,6 +144,18 @@ module TiebaXiaoshuoBot
       else
         self.active_fictions
       end
+    end
+
+    def create_fic fic_name
+      Fiction.find_or_create(:name => fic_name)
+    end
+
+    def create_sub fic_name
+      Subscription.find_or_create(:user => self, :fiction => create_fic(fic_name))
+    end
+
+    def get_sub fic_name
+      Subscription.find(:user => self, :fiction => create_fic(fic_name))
     end
 
   end

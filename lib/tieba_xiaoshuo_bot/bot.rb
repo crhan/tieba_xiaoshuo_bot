@@ -179,10 +179,14 @@ HERE
     end
 
     def method_missing method, *args
-      user = args[0]
-      content = args[1..-1].join(" ") if args
-      Worker::LogError.perform_async user.account, %|-#{method} #{content}|
-      sendMsg user, %|您输入的 `-#{method[5..-1]} #{ content }` 似乎不是有效的命令, 请参阅帮助(输入`-?`)|
+      if method =~ /^func_.*/
+        user = args[0]
+        content = args[1..-1].join(" ") unless args.empty?
+        Worker::LogError.perform_async user.account, %|-#{method} #{content}|
+        sendMsg user, %|您输入的 `-#{method[5..-1]} #{ content }` 似乎不是有效的命令, 请参阅帮助(输入`-?`)|
+      else
+        Worker::LogError.perform_async nil, %|-#{method} #{content}|
+      end
     end
 
     # args[0] => user
