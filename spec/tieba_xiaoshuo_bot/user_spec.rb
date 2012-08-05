@@ -1,3 +1,4 @@
+# coding: utf-8
 require 'spec_helper.rb'
 
 module TiebaXiaoshuoBot
@@ -31,9 +32,7 @@ module TiebaXiaoshuoBot
         @user.account.should match("crhan123@gmail.com")
       end
 
-      it do
-        @user.should have(4).fictions
-      end
+      specify {@user.should have(4).fictions}
 
       describe "#sended" do
         it %|change by 1 when run with no arg| do
@@ -59,11 +58,69 @@ module TiebaXiaoshuoBot
         @user.should have(3).active_fictions
       end
 
-      it do
-        pending "send the msg and change the total_count"
-        expect {
-          @user
-        }
+      it "active? and deactive? should be right" do
+        active = DB[:users].select(:active).where(:account => "crhan123@gmail.com").first[:active]
+        active.should == @user.active?
+        active.should_not == @user.deactive?
+      end
+
+      describe "#mode" do
+        it "should return the right mode" do
+          @user.mode.should == "cron" if @user.active?
+          @user.mode.should == "check" if @user.deactive?
+        end
+      end
+
+      describe "#sub_fiction" do
+        context "with a new fiction" do
+          it "a new fiction created and subscribed" do
+            old_count = Fiction.count
+            result = @user.sub_fiction("哈哈")
+            new_count = Fiction.count
+            new_count.should_not == old_count
+            result.should == true
+            result2 = @user.sub_fiction("哈哈")
+            result2.should == true
+            Fiction.count.should == new_count
+            @user.send(:get_sub, "哈哈").should_not be_nil
+          end
+        end
+        context "with an old fiction" do
+          it "do no change" do
+            old_count = Fiction.count
+            result = @user.sub_fiction("神印王座")
+            new_count = Fiction.count
+            new_count.should == old_count
+            result.should be_true
+          end
+        end
+        context "with an unsubed fiction" do
+          it "change the subscribed status" do
+            expect {@user.sub_fiction("遮天")}.to change{@user.send(:get_sub,"遮天")}
+          end
+        end
+      end
+
+      describe "#unsub_fiction" do
+        context "with a new fiction" do
+          specify {@user.unsub_fiction("哈哈").should be_false}
+        end
+        context "with a unsubed fiction" do
+          specify {@user.unsub_fiction("遮天").should be_false}
+        end
+        context "with a subed fiction" do
+          specify {@user.unsub_fiction("神印王座").should be_true}
+        end
+      end
+
+      describe "#active_fictions" do
+        specify {@user.should have(3).active_fictions}
+      end
+
+      describe "#switch_mode" do
+        it "should change active status" do
+          expect {@user.switch_mode}.to change{@user.active}
+        end
       end
     end
 

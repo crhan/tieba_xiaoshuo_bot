@@ -31,17 +31,12 @@ module TiebaXiaoshuoBot
 
     alias checked_id last_id
 
-    def sub_active
-      if self.active == true
-        false
-      else
-        self.active = true
-        self.save
-        true
-      end
+    def active_it
+      self.update(:active => true)
+      true
     end
 
-    def sub_deactive
+    def deactive_it
       if self.active == false
         false
       else
@@ -50,6 +45,9 @@ module TiebaXiaoshuoBot
         true
       end
     end
+
+    alias sub_active active_it
+    alias sub_deactive deactive_it
 
     def active?
       active
