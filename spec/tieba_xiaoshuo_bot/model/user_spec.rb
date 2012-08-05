@@ -1,5 +1,5 @@
 # coding: utf-8
-require 'spec_helper.rb'
+require 'spec_helper'
 
 module TiebaXiaoshuoBot
   describe User do
