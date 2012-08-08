@@ -66,6 +66,7 @@ def insert_data
   TiebaXiaoshuoBot::Subscription.create(user_id: 1, fiction_id: 1)
   TiebaXiaoshuoBot::Subscription.create(user_id: 1, fiction_id: 2)
   TiebaXiaoshuoBot::Subscription.create(user_id: 1, fiction_id: 3)
+  TiebaXiaoshuoBot::Subscription.create(user_id: 1, fiction_id: 4, active: false)
   TiebaXiaoshuoBot::Subscription.create(user_id: 2, fiction_id: 1)
   TiebaXiaoshuoBot::Subscription.create(user_id: 2, fiction_id: 2)
   TiebaXiaoshuoBot::Subscription.create(user_id: 2, fiction_id: 3)

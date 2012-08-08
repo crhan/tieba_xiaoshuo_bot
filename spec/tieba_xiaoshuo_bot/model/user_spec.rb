@@ -4,6 +4,7 @@ require 'spec_helper'
 module TiebaXiaoshuoBot
   describe User do
     describe "the first user" do
+      before(:each) { @user = User.first }
       def user_send_prepare fiction_id=nil
         last_count = @user.total_count
         msg, this_count = @user.send_prepare(:fiction_id => fiction_id)
@@ -15,15 +16,6 @@ module TiebaXiaoshuoBot
         msg_2, this_count_2 = @user.send_prepare(:fiction_id => fiction_id)
         msg_2.should be_empty
         this_count_2.should == 0
-      end
-
-      before(:each) do
-        @user = User.first
-      end
-
-
-      it %|account should match "crhan123@gmail.com"| do
-        @user.account.should match("crhan123@gmail.com")
       end
 
       specify {@user.should have(4).fictions}
@@ -53,13 +45,16 @@ module TiebaXiaoshuoBot
       end
 
       it "active? and deactive? should be right" do
-        active = DB[:users].select(:active).where(:account => "crhan123@gmail.com").first[:active]
+        active = DB[:users].select(:active).where(:account => @user.account).first[:active]
         active.should == @user.active?
         active.should_not == @user.deactive?
       end
 
       describe "#mode" do
         it "should return the right mode" do
+          @user.mode.should == "cron" if @user.active?
+          @user.mode.should == "check" if @user.deactive?
+          @user.switch_mode
           @user.mode.should == "cron" if @user.active?
           @user.mode.should == "check" if @user.deactive?
         end
@@ -114,14 +109,15 @@ module TiebaXiaoshuoBot
       describe "#switch_mode" do
         it "should change active status" do
           expect {@user.switch_mode}.to change{@user.active}
+          expect {@user.switch_mode}.to change{@user.active}
         end
       end
-    end
 
-    it %|raise "Sequel::ValidationFailed" when create second account named "crhan123@gmail.com"| do
-      expect {
-        User.create(:account => "crhan123@gmail.com")
-      }.to raise_error(Sequel::ValidationFailed)
+      it %|raise "Sequel::ValidationFailed" when create second account name the same| do
+        expect {
+          User.create(:account => @user.account)
+        }.to raise_error(Sequel::ValidationFailed)
+      end
     end
   end
 end

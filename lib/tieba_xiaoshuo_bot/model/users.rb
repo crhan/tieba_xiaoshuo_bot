@@ -113,7 +113,7 @@ module TiebaXiaoshuoBot
     alias unsub_fiction unsubscribe
 
     def active_fictions
-      Fiction.join(:subscriptions, :fiction_id => :id).filter(:active)
+      Fiction.join(:subscriptions, :fiction_id => :id).filter(:active, :user_id => id)
     end
 
     def list_subscriptions
