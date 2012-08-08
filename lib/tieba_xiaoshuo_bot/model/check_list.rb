@@ -20,6 +20,11 @@ module TiebaXiaoshuoBot
       validates_presence [:thread_id, :thread_name, :fiction_id]
     end
 
+    def before_create
+      super
+      CheckList.filter(:thread_name => self.thread_name, :fiction_id => self.fiction_id).update(:active => false)
+    end
+
     # return 5 Fiction Thread object array by reverse order
     def self.find_by_fiction fiction, last_check
       if fiction.instance_of? Fiction
