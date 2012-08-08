@@ -18,9 +18,10 @@ module TiebaXiaoshuoBot
     def validate
       super
       validates_presence :name
+      validates_unique :name
     end
 
-    def before_save
+    def before_create
       super
       self.encode_url = URI.encode name.encode("gbk")
     end
