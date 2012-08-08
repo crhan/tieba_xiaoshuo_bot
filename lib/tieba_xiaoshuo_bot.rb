@@ -2,6 +2,8 @@
 require 'bundler/setup'
 require 'logger'
 
+$:.unshift File.expand_path("..", __FILE__)
+
 $logger = Logger.new($stdout)
 #$logger.level = Logger::INFO
 

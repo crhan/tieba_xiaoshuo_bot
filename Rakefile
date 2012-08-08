@@ -1,5 +1,5 @@
 # encoding: utf-8
-$:.unshift 'lib'
+$:.unshift File.expand_path("../lib", __FILE__)
 require 'bundler/setup'
 require 'sequel'
 require 'logger'
