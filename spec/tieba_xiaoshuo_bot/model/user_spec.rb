@@ -21,12 +21,6 @@ module TiebaXiaoshuoBot
         @user = User.first
       end
 
-      around do |example|
-        DB.transaction do
-          example.run
-          raise Sequel::Rollback
-        end
-      end
 
       it %|account should match "crhan123@gmail.com"| do
         @user.account.should match("crhan123@gmail.com")
