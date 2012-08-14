@@ -50,11 +50,11 @@ module TiebaXiaoshuoBot
       num
     end
 
-    def cron?
+    def initiative?
       active?
     end
 
-    def check?
+    def passive?
       deactive?
     end
 
@@ -67,23 +67,23 @@ module TiebaXiaoshuoBot
     end
 
     def mode
-      if cron?
-        "cron"
-      elsif check?
-        "check"
+      if initiative?
+        "主动"
+      elsif passive?
+        "被动"
       end
     end
 
     def switch_mode
-      if cron?
+      if initiative?
         self.active = false
         self.save
-        "check"
-      elsif check?
+        "被动"
+      elsif passive?
         self.active = true
         self.save
         Worker::Send.perform_async nil, self.id, false
-        "cron"
+        "主动"
       else
         raise RuntimeError, "简直不能相信这里出错2"
       end

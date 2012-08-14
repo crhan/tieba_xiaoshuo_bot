@@ -52,11 +52,11 @@ module TiebaXiaoshuoBot
 
       describe "#mode" do
         it "should return the right mode" do
-          @user.mode.should == "cron" if @user.active?
-          @user.mode.should == "check" if @user.deactive?
+          @user.mode.should == "主动" if @user.active?
+          @user.mode.should == "被动" if @user.deactive?
           @user.switch_mode
-          @user.mode.should == "cron" if @user.active?
-          @user.mode.should == "check" if @user.deactive?
+          @user.mode.should == "主动" if @user.active?
+          @user.mode.should == "被动" if @user.deactive?
         end
       end
 
