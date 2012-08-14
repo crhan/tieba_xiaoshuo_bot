@@ -1,3 +1,14 @@
+
+1.3.0 / 2012-08-14 
+==================
+
+  * 增加 Fiction::name 的 unique 限制
+  * 使用 simplecov 作为测试覆盖率工具
+  * 分离 _测试_ 和 _发布_ 环境的数据库配置
+  * 重构 worker/send.rb, model/user.rb, model/fiction.rb
+  * 增加测试代码, 测试样本数据
+  * 修复 migration 错误
+
 1.2.4 / 2012-07-31 
 ==================
 
