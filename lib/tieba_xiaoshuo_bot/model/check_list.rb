@@ -16,11 +16,6 @@ module TiebaXiaoshuoBot
       %|#{self.fiction.name}\n#{self.thread_name}, http://wapp.baidu.com/m?kz=#{thread_id}|
     end
 
-    def validate
-      validates_presence [:thread_id, :thread_name, :fiction_id]
-    end
-
-    # return 5 Fiction Thread object array by reverse order
     def self.find_by_fiction fiction, last_check
       if fiction.instance_of? Fiction
         self.filter(:fiction => fiction)
@@ -31,6 +26,16 @@ module TiebaXiaoshuoBot
       else
         raise TypeError, "Need a Fiction object or a Fixnum refer to fiction_id. But I got a #{fiction.class}"
       end.filter{thread_id > last_check}
+    end
+
+    private
+    def validate
+      validates_presence [:thread_id, :thread_name, :fiction_id]
+    end
+
+    def before_create
+      super
+      CheckList.filter(:thread_name => self.thread_name, :fiction_id => self.fiction_id).update(:active => false)
     end
   end
   CheckList.set_dataset DB[:check_lists].filter(:active).order(:thread_id)

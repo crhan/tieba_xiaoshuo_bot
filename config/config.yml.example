@@ -1,9 +1,26 @@
 # database settings
-database:
-  adapter: postgres
-  database: fiction_test
-gtalk:
-  account: xxxxxx@gmail.com
-  password: yourPassword%
-logger:
-  db: log/db.log
+production:
+  database:
+    adapter: postgres or mysql
+    database: production_database
+    host: localhost
+    user: your_user
+    password: your_password
+  gtalk:
+    account: xxxxxx@gmail.com
+    password: yourPassword%
+  logger:
+    db: log/db.log
+
+test:
+  database:
+    adapter: postgres or mysql
+    database: test_database
+    host: localhost
+    user: your_test_user
+    password: your_test_password
+  gtalk:
+    account: xxxxxx@gmail.com
+    password: yourPassword%
+  logger:
+    db: log/db_test.log

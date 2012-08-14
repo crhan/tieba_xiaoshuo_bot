@@ -1,6 +1,6 @@
 require 'sequel'
 # connect database
-DB = Sequel.connect(YAML.load_file("config/config.yml")["database"], :loggers => [Logger.new(YAML.load_file("config/config.yml")["logger"]["db"])])
+DB = Sequel.connect(CONFIG["database"], :loggers => [Logger.new(CONFIG["logger"]["db"])])
 # require database model
 require 'tieba_xiaoshuo_bot/model/base_model'
 require 'tieba_xiaoshuo_bot/model/check_list'
