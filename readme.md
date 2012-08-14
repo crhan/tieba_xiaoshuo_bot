@@ -9,7 +9,7 @@ Howto?
 5. `bundle exec foreman start`
 
 Fetch Rules?
-======
+============
 
 * 每五分钟扫描一遍对应小说贴吧的置顶帖，如果扫到包含 *第xxx章*
   字样的就认定是更新的小说章节，然后发给订阅者
@@ -19,11 +19,35 @@ Try?
 ====
 
 * 用 Gtalk 加好友 `crhan.xiaoshuo@gmail.com`
-* 发送 `-help` 给机器人查看帮助
+* 发送 `-?` 给机器人查看帮助
 * 发送 `-sub 小说名字` 即可订阅小说
 
+Commands
+========
+
+* -c/-check: 在 __被动__ 模式下查看积累的更新
+* -s/-sub <小说名>: 订阅小说(请先检查对应贴吧是否有小说更新服务)
+* -us/-unsub <小说名>: 退订已订阅的小说
+* -sm/-switch_mode: 在 __主动__ 和 __被动__ 推送模式之间切换
+* -m/-show_mode: 看看自己是在主动模式还是被动模式
+* -h/-?/-help: 查看帮助
+* -l/-ls/-list: 查看已订阅(包括已退订)的小说
+* -fb/-feedback: 给我提意见啦
+* -ab/-about: 无聊卖萌(女神提供的台词)
+* -co/-count: 看看我已经发给你多少章小说啦
+
 ---------
+
 # Change Log
+
+## 1.3.0 / 2012-08-14 
+
+  * 增加 Fiction::name 的 unique 限制
+  * 使用 simplecov 作为测试覆盖率工具
+  * 分离 _测试_ 和 _发布_ 环境的数据库配置
+  * 重构 worker/send.rb, model/user.rb, model/fiction.rb
+  * 增加测试代码, 测试样本数据
+  * 修复 migration 错误
 
 ## 1.2.4 / 2012-07-31 
 
@@ -89,4 +113,4 @@ Try?
   * 使用 `Sequel` 作为 ORM 组件
   * 使用 `PostgreSQL` 做数据存储
   * REXML bug fix: 使用
-  	(xmpp4r/issues/3)[https://github.com/ln/xmpp4r/issues/3#issuecomment-1739952] 补丁使 REXML 能正确处理 UTF 字符
+  	[ xmpp4r/issues/3 ]( https://github.com/ln/xmpp4r/issues/3#issuecomment-1739952 ) 补丁使 REXML 能正确处理 UTF 字符
