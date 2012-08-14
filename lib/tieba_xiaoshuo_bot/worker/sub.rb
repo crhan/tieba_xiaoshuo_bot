@@ -17,7 +17,7 @@ module TiebaXiaoshuoBot
         if user.subscribe fic_name
           $bot.sendMsg user,%|看到那【#{fic_name}】了吗？这本小说值得一战！|
           fic = Fiction.find(:name => fic_name)
-          fic.fetch # fetch now!
+          fic.update # fetch now!
           Worker::Send.perform_async fic.id, user.id # send to this user
           $logger.info %|add "#{fic.name}" subsciption for user "#{user.account}"|
           true

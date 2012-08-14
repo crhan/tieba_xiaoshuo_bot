@@ -5,6 +5,9 @@ require 'simplecov'
 require 'faker'
 require 'tieba_xiaoshuo_bot'
 require 'sidekiq/testing'
+require 'pry'
+require 'pry-nav'
+
 include TiebaXiaoshuoBot
 
 RSpec.configure do |config|
@@ -12,4 +15,3 @@ RSpec.configure do |config|
     DB.transaction(:rollback=>:always){example.run}
   end
 end
-
