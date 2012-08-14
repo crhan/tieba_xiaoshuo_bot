@@ -36,19 +36,21 @@ HERE
 欢迎使用XXXX（我到底叫什么啊喂），这里就是可用的命令列表啦～
 所有命令请以英文半角的短横开始哦～
 
-推送小说有两种模式( 通过 `-switch` 指令切换):
-"cron" 模式即抓取到小说立即推送给您( 每 5 分钟检查一次新小说 )
-"check" 模式则需要您发送命令 `-check` 给我才会推送新收集到的小说给您哦
+推送小说有两种模式( 通过 `-sm` 指令切换):
+"主动" 模式即抓取到小说立即推送给您( 每 5 分钟检查一次新小说 )
+"被动" 模式则需要您发送命令 `-check`(短命令 `-c`) 给我才会推送新收集到的小说给您哦
 
 *****
-订阅小说: -sub <小说名>
-退订小说: -unsub <小说名>
-已订阅（过）的小说列表: -list
-切换模式: -switch
-获取更新: -check
-使用体验反馈: -feedback <内容>
-显示本帮助: -help
-卖萌: -about
+* -c/-check: 在 __被动__ 模式下查看积累的更新
+* -s/-sub <小说名>: 订阅小说(请先检查对应贴吧是否有小说更新服务)
+* -us/-unsub <小说名>: 退订已订阅的小说
+* -sm/-switch_mode: 在 __主动__ 和 __被动__ 推送模式之间切换
+* -m/-show_mode: 看看自己是在主动模式还是被动模式
+* -h/-?/-help: 查看帮助
+* -l/-ls/-list: 查看已订阅(包括已退订)的小说
+* -fb/-feedback: 给我提意见啦
+* -ab/-about: 无聊卖萌(女神提供的台词)
+* -co/-count: 看看我已经发给你多少章小说啦
 *****
 HERE
     end
@@ -204,8 +206,8 @@ HERE
     # args[0] => user
     def func_check *args
       user = args[0]
-      if user.cron?
-        sendMsg user, %|请输入 `-mode` 切换到 "check" 模式再使用此命令哦~|
+      if user.initiative?
+        sendMsg user, %|请输入 `-sw` 切换到 "被动" 模式再使用此命令哦~|
       else
         sendMsg user, %|小说章节检查中|
         Worker::Send.perform_async nil, user.id, true
