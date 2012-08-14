@@ -1,3 +1,14 @@
+
+1.3.0 / 2012-08-14 
+==================
+
+  * 增加 Fiction::name 的 unique 限制
+  * 使用 simplecov 作为测试覆盖率工具
+  * 分离 _测试_ 和 _发布_ 环境的数据库配置
+  * 重构 worker/send.rb, model/user.rb, model/fiction.rb
+  * 增加测试代码, 测试样本数据
+  * 修复 migration 错误
+
 1.2.4 / 2012-07-31 
 ==================
 
@@ -75,4 +86,4 @@
   * 使用 `Sequel` 作为 ORM 组件
   * 使用 `PostgreSQL` 做数据存储
   * REXML bug fix: 使用
-  	(xmpp4r/issues/3)[https://github.com/ln/xmpp4r/issues/3#issuecomment-1739952] 补丁使 REXML 能正确处理 UTF 字符
+  	[ xmpp4r/issues/3 ]( https://github.com/ln/xmpp4r/issues/3#issuecomment-1739952 ) 补丁使 REXML 能正确处理 UTF 字符
