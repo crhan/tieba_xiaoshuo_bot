@@ -1,7 +1,6 @@
 # coding: utf-8
 module TiebaXiaoshuoBot
   require 'tieba_xiaoshuo_bot/patch/rexml_utf_patch'
-  require 'tieba_xiaoshuo_bot/patch/standard_error'
   require 'xmpp4r/client'
   require 'xmpp4r/roster'
   require 'tieba_xiaoshuo_bot/patch/gtalk_message_patch'
@@ -126,7 +125,7 @@ HERE
         @roster.items.each do |k,v|
           # create user if not exist
           jid = v.jid.strip.to_s
-          user = User.find_or_create(:account => jid)
+          User.find_or_create(:account => jid)
           $logger.debug "user #{jid} found in rosterItem"
         end
       end
@@ -159,7 +158,7 @@ HERE
       if msg[0].eql? '-' # it is a command
         $logger.debug %|found command "#{msg}"|
         # continue parsing
-        args = msg[1..-1].split(/[\s  ]/)
+        args = msg[1..-1].split(/[\s ]/)
         comm = args.shift
         $logger.debug %|args is #{args.to_s}|
         $logger.debug %|comm is #{args.to_s}|
