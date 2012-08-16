@@ -40,6 +40,10 @@ Commands
 
 # Change Log
 
+## 1.3.1 / 2012-08-16 
+
+  * bugs fixed
+
 ## 1.3.0 / 2012-08-14 
 
   * 增加 Fiction::name 的 unique 限制
