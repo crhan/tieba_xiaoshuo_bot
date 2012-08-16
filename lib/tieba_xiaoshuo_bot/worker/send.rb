@@ -40,11 +40,11 @@ module TiebaXiaoshuoBot
         end
         raise e
       end
-    end
 
-    private
-    def cron_sub_list fiction_id
-      Subscription.active_users fiction_id
+      private
+      def cron_sub_list fiction_id
+        Subscription.active_users fiction_id
+      end
     end
   end
 end
