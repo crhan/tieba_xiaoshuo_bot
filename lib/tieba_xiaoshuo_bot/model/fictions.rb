@@ -4,6 +4,9 @@ require 'net/http'
 
 module TiebaXiaoshuoBot
   class Fiction < Sequel::Model
+    class HTTPResponseError < StandardError; end
+    class NoContentError < StandardError; end
+    class ChapterExistError < StandardError; end
     plugin :validation_helpers
     plugin :schema
     many_to_many :users, :join_table => :subscriptions
@@ -31,7 +34,7 @@ module TiebaXiaoshuoBot
       new_chapters.each do |ch|
         begin
           create_chapter ch[:thread_id], ch[:thread_name]
-        rescue ChapterExistError => e
+        rescue ChapterExistError
           false
         end
       end
@@ -93,7 +96,7 @@ module TiebaXiaoshuoBot
 
     def create_chapter id, name
       id = id.to_i if id.respond_to?(:to_i)
-      raise ChapterExistError ":thead_id #{id} exist" if CheckList.find(:thread_id => id)
+      raise ChapterExistError, ":thead_id #{id} exist" if CheckList.find(:thread_id => id)
       nc = CheckList.new
       nc.thread_id = id
       nc.thread_name = name

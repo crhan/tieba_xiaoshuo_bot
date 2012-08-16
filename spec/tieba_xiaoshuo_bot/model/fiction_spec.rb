@@ -12,7 +12,7 @@ module TiebaXiaoshuoBot
       end
 
       specify {should have(2).subscriptions}
-      specify {lambda {subject.send(:new_chapters, "")}.should raise_error(NoContentError)}
+      specify {lambda {subject.send(:new_chapters, "")}.should raise_error(TiebaXiaoshuoBot::Fiction::NoContentError)}
       specify {lambda {subject.send(:get_response)}.should_not raise_error}
       specify {lambda {subject.send(:create_chapter, 1777176400, "aha")}.should raise_error}
       specify {lambda {subject.send(:create_chapter, 1777176401, "aha")}.should_not raise_error}
