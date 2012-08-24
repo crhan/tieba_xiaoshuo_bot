@@ -254,7 +254,8 @@ HERE
 
     # args[0] => user
     def func_count *args
-      sendMsg args[0], %/我已经给您传递了 "#{user.total_count}" 篇小说啦~/
+      user = args[0]
+      sendMsg user, %/我已经给您传递了 "#{user.total_count}" 篇小说啦~/
     end
 
   rescue IOError => e
