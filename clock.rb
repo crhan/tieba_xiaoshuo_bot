@@ -13,4 +13,4 @@ end
 # check fiction every 5 minutes
 every 5.minutes, "TiebaXiaoshuoBot::Worker::CronFetch.perform_async"
 # check connect status evert 10 seconds
-# every 10, "TiebaXiaoshuoBot::Worker::OnlineCheck.perform_async"
+every 5.minutes, "TiebaXiaoshuoBot::Worker::OnlineCheck.perform_async"
