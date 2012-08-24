@@ -81,7 +81,7 @@ module TiebaXiaoshuoBot
 
     def new_chapters body=get_response
       result = Nokogiri::HTML(body)
-      .xpath(%|//div[@class="th_lz"]/img[@alt="置顶"]/../a|)
+      .xpath(%|//img[@alt="置顶"]/../a|)
       .select {|e| REGEX.match e.content}
       .map do |e|
         {
