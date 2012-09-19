@@ -48,7 +48,7 @@ module TiebaXiaoshuoBot
       false
     end
 
-    alias fetch update
+    deprecate :fetch, :update
 
     private
     def validate

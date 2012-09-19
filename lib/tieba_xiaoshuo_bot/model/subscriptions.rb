@@ -29,7 +29,7 @@ module TiebaXiaoshuoBot
       self.update(:check_id => last_id)
     end
 
-    alias checked_id last_id
+    deprecate :checked_id, :last_id
 
     def active_it
       self.update(:active => true)
@@ -46,8 +46,8 @@ module TiebaXiaoshuoBot
       end
     end
 
-    alias sub_active active_it
-    alias sub_deactive deactive_it
+    deprecate :sub_active, :active_it
+    deprecate :sub_deactive, :deactive_it
 
     def active?
       active
