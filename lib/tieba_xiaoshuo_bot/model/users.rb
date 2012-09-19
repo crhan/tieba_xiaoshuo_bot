@@ -94,7 +94,7 @@ module TiebaXiaoshuoBot
     # 异常返回 false
     def subscribe fiction_name
       create_sub(fiction_name).active_it
-    rescue => e
+    rescue
       false
     end
 
@@ -104,13 +104,13 @@ module TiebaXiaoshuoBot
     def unsubscribe fiction_name
       begin
         get_sub(fiction_name).deactive_it
-      rescue =>e
+      rescue
         false
       end
     end
 
-    alias sub_fiction subscribe
-    alias unsub_fiction unsubscribe
+    deprecate :sub_fiction, :subscribe
+    deprecate :unsub_fiction, :unsubscribe
 
     def active_fictions
       Fiction.join(:subscriptions, :fiction_id => :id).filter(:active, :user_id => id)
@@ -127,7 +127,7 @@ module TiebaXiaoshuoBot
       msg
     end
 
-    alias list_sub list_subscriptions
+    deprecate :list_sub, :list_subscriptions
 
     private
     def chapters fiction, last_id
