@@ -172,6 +172,8 @@ HERE
         rescue RuntimeError => e
           Worker::LogError.perform_async user.account ,e.message, e.backtrace
           sendMsg user, %|中奖，我也不知道为什么这里错了，不过这个错误已经记录下来啦！|
+        rescue NoMethodError => e
+          Worker::LogError.perform_async user.account, e.message, e.backtrace
         end
       else
         Worker::LogError.perform_async user.account, msg
@@ -186,7 +188,7 @@ HERE
         Worker::LogError.perform_async user.account, %|-#{method} #{content}|
         sendMsg user, %|您输入的 `-#{method[5..-1]} #{ content }` 似乎不是有效的命令, 请参阅帮助(输入`-?`)|
       else
-        Worker::LogError.perform_async nil, %|-#{method} #{content}|
+        super
       end
     end
 

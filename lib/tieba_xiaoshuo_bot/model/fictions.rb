@@ -93,9 +93,9 @@ module TiebaXiaoshuoBot
       rescue => e
         retry_time ||= 0
         if retry_time< 3
-          $logger.error %|#{e.inspect}, #{__LINE__}|
+          $logger.error %|#{e.inspect}, #{__FILE__}:#{__LINE__}|
           retry_time += 1
-          $logger.warn %|Retry #{retry_time} time(s)|
+          $logger.warn %|#{self.name} Retry #{retry_time} time(s)|
           sleep retry_time ** 4 + 5
           retry
         end
