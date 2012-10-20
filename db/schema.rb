@@ -15,10 +15,10 @@ ActiveRecord::Schema.define(:version => 20121020071309) do
 
   create_table "users", :force => true do |t|
     t.string   "account"
-    t.integer  "send_count"
-    t.boolean  "active"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.integer  "send_count", :default => 0
+    t.boolean  "active",     :default => true
+    t.datetime "created_at",                   :null => false
+    t.datetime "updated_at",                   :null => false
   end
 
 end
