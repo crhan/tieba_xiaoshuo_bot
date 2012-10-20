@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 require 'socket'
 class TCPSocket
   def external_encoding

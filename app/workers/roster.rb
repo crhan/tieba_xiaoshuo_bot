@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class Roster
   include Sidekiq::Worker
   def perform(jid)

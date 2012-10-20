@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class Message
   include Sidekiq::Worker
   def perform(user, msg)

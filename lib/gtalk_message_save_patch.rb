@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 # 默认添加 google:save 属性
 module Jabber
   class Message
