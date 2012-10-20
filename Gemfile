@@ -36,3 +36,18 @@ gem 'jquery-rails'
 
 # To use debugger
 # gem 'debugger'
+
+gem "mysql"
+gem "xmpp4r", "~> 0.5"
+gem "eventmachine", "~> 1.0.0"
+
+# sidekiq and monitor request
+gem "sidekiq", "~> 2.4.0"
+gem "sinatra", :require => nil
+gem "slim"
+
+group :development do
+  gem 'pry'
+  gem 'pry_debug'
+  gem 'pry-rails'
+end
