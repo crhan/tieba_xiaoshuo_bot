@@ -56,7 +56,7 @@ class Bot < EventMachine::Connection
 
   def add_message_callback
     cl.add_message_callback do |m|
-      if m.type == :chat
+      if m.type == :chat and ! m.body.nil?
         msg = Hpricot(m.body).to_plain_text
         user = m.from.strip.to_s
         Bot.logger.debug %|--start parsing "#{msg}" from user "#{user}"|
