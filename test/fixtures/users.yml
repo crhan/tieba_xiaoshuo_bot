@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  account: MyString
+  send_count: 1
+  active: false
+
+two:
+  account: MyString
+  send_count: 1
+  active: false
