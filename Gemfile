@@ -46,6 +46,8 @@ gem "sidekiq", "~> 2.4.0"
 gem "sinatra", :require => nil
 gem "slim"
 
+gem "hpricot"
+
 group :development do
   gem 'pry'
   gem 'pry_debug'
