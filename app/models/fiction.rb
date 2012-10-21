@@ -6,10 +6,11 @@ class Fiction < ActiveRecord::Base
   class HTTPMovedPermanentlyError< StandardError; end
 
   attr_accessible :encoded_url, :name
-  has_many :chapters
-  has_many :users, :through => :subscriptions
   before_create :generate_encoded_url
   validates :name, :presence => true, :uniqueness => true
+  has_many :users, :through => :subscriptions
+  has_many :subscriptions
+  has_many :chapters
 
   REGEX = /第.{1,18}[章节]/;
 
