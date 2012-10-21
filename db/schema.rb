@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121021070819) do
+ActiveRecord::Schema.define(:version => 20121021113051) do
 
   create_table "chapters", :force => true do |t|
     t.integer  "thread_id"
@@ -50,9 +50,9 @@ ActiveRecord::Schema.define(:version => 20121021070819) do
     t.integer  "fiction_id"
     t.integer  "user_id"
     t.integer  "chapter_id"
-    t.boolean  "active"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.boolean  "active",     :default => true
+    t.datetime "created_at",                   :null => false
+    t.datetime "updated_at",                   :null => false
   end
 
   add_index "subscriptions", ["chapter_id"], :name => "index_subscriptions_on_chapter_id"
