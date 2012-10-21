@@ -42,8 +42,11 @@ module Bot
       Bot.logger.debug %{connected: someone}
     end
 
+    # assume that this protocol only receive format in JSON
+    #   {"send_to":"who_receive@example.com","content":"what you want to say"}
     def receive_data(data)
       Bot.logger.debug %{receive: #{data}}
+      deliver JSON.parse(data, symbolize_names: true) unless data.blank?
     rescue => e
       Error::log(e)
     end
@@ -54,6 +57,12 @@ module Bot
 
 
     private
+
+    def deliver(hash)
+      send_to, content = hash[:send_to], hash[:content]
+      msg = Jabber::Message.new(send_to).set_type(:chat).set_body(content)
+      cl.send(msg)
+    end
 
     def do_connection
       if cl.is_disconnected?
