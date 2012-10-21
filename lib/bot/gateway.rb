@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 module Bot
   class Gateway
     BOT_CONFIG = YAML::load(File.open(File.join(Rails.root, "config/bot.yml")))
