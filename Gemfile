@@ -54,3 +54,4 @@ group :development do
   gem 'pry-rails'
 end
 gem "nokogiri", "~> 1.5.5"
+gem "foreman"
