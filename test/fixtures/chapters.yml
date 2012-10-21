@@ -1,11 +1,19 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
 
 one:
-  thread_id: 1
-  fiction: 
-  name: MyString
+  id: 1
+  thread_id: 193421526
+  fiction_id: 1
+  title: "第一章"
 
 two:
-  thread_id: 1
-  fiction: 
-  name: MyString
+  id: 2
+  thread_id: 192311233
+  fiction_id: 1
+  title: "第二章"
+
+three:
+  id: 3
+  thread_id: 192311234
+  fiction_id: 2
+  title: "第二章"
