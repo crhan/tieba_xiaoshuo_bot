@@ -53,3 +53,4 @@ group :development do
   gem 'pry_debug'
   gem 'pry-rails'
 end
+gem "nokogiri", "~> 1.5.5"
