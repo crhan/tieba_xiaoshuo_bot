@@ -20,4 +20,8 @@ class Command
     Bot::Gateway.deliver user.account, %{订阅"#{fic_name}"失败: 您已订阅}
   end
 
+  def func_check user, *args
+    Bot::Gateway.deliver user.account, user.new_chapers
+  end
+
 end
