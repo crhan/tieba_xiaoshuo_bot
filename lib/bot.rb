@@ -11,6 +11,7 @@ require "active_support/core_ext"
 
 class Bot < EventMachine::Connection
   class << self
+    attr_reader :connect_mutex
     def logger
       @logger ||= Logger.new(STDOUT)
     end
@@ -18,6 +19,7 @@ class Bot < EventMachine::Connection
 
   def initialize
     super
+    @@connect_mutex ||= Mutex.new
     require_worker
     do_connection
     auto_update_roster_item
@@ -35,10 +37,19 @@ class Bot < EventMachine::Connection
 
   private
   def do_connection
-    cl.connect
-    cl.auth(BOT_CONFIG["password"])
-    cl.send(Jabber::Presence.new)
-    Bot.logger.info "Jabber Connected! Account: #{BOT_CONFIG['account']}"
+    if cl.is_disconnected?
+      connect_mutex.synchronize do
+        cl.connect
+        cl.auth(BOT_CONFIG["password"])
+        cl.send(Jabber::Presence.new)
+        Bot.logger.info "Jabber Connected! Account: #{BOT_CONFIG['account']}"
+      end
+    end
+    cl
+  rescue ThreadError => e
+    LogError.perform_async e.class, e.message
+    sleep 0.1
+    retry
   end
 
   def auto_update_roster_item
@@ -87,15 +98,15 @@ class Bot < EventMachine::Connection
   end
 
   def cl
-    @cl ||= Jabber::Client.new(myJID)
+    @@cl ||= Jabber::Client.new(myJID)
   end
 
   def roster
-    @roster ||= Jabber::Roster::Helper.new(cl)
+    @@roster ||= Jabber::Roster::Helper.new(cl)
   end
 
   def myJID
-    @jid ||= Jabber::JID.new("#{BOT_CONFIG['account']}/xiaoshuoBot")
+    @@jid ||= Jabber::JID.new("#{BOT_CONFIG['account']}/xiaoshuoBot")
   end
 
   def require_worker
@@ -103,4 +114,13 @@ class Bot < EventMachine::Connection
       require w
     end
   end
+rescue Jabber::ServerDisconnected => e
+  LogError.perform_async "Jabber:ServerDisconnected", e.message
+  do_connection
+  sleep 1
+  retry
+rescue => e
+  LogError.perform_async e.class, e.message
+  do_connection
+  raise e
 end
