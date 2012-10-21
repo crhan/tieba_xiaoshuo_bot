@@ -4,16 +4,29 @@ one:
   id: 1
   thread_id: 193421526
   fiction_id: 1
-  title: "第一章"
+  title: "第1章"
 
 two:
   id: 2
   thread_id: 192311233
   fiction_id: 1
-  title: "第二章"
+  title: "第2章"
 
 three:
   id: 3
   thread_id: 192311234
   fiction_id: 2
-  title: "第二章"
+  title: "第2章"
+
+four:
+  id: 4
+  thread_id: 293421527
+  fiction_id: 1
+  title: "第3章"
+  active: false
+
+five:
+  id: 5
+  thread_id: 293421528
+  fiction_id: 1
+  title: "第3章"

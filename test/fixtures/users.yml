@@ -1,9 +1,10 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
 
 one:
-  account: MyString
+  id: 1
+  account: crhan123@gmail.com
   send_count: 1
-  active: false
+  active: true
 
 two:
   account: MyString
