@@ -7,6 +7,7 @@ require "rexml_utf_patch"
 require "gtalk_message_save_patch"
 require "sidekiq"
 require "hpricot"
+require "active_support/core_ext"
 
 class Bot < EventMachine::Connection
   class << self
@@ -15,11 +16,21 @@ class Bot < EventMachine::Connection
     end
   end
 
-  def post_init
+  def initialize
+    super
+    require_worker
     do_connection
     auto_update_roster_item
     auto_accept_subscription_resquest
     add_message_callback
+  end
+
+  def post_init
+    do_connection
+  end
+
+  def receive_data(data)
+    Bot.logger.debug %{receive: #{data.to_s}}
   end
 
   private
@@ -85,5 +96,11 @@ class Bot < EventMachine::Connection
 
   def myJID
     @jid ||= Jabber::JID.new("#{BOT_CONFIG['account']}/xiaoshuoBot")
+  end
+
+  def require_worker
+    Dir.glob(File.expand_path("../../app/workers/*.rb", __FILE__)).each do |w|
+      require w
+    end
   end
 end
