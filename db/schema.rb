@@ -11,7 +11,18 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121021043547) do
+ActiveRecord::Schema.define(:version => 20121021070819) do
+
+  create_table "chapters", :force => true do |t|
+    t.integer  "thread_id"
+    t.integer  "fiction_id"
+    t.string   "title"
+    t.datetime "created_at",                   :null => false
+    t.datetime "updated_at",                   :null => false
+    t.boolean  "active",     :default => true
+  end
+
+  add_index "chapters", ["fiction_id"], :name => "index_chapters_on_fiction_id"
 
   create_table "errors", :force => true do |t|
     t.string   "exception"
@@ -27,6 +38,26 @@ ActiveRecord::Schema.define(:version => 20121021043547) do
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
+
+  create_table "fictions", :force => true do |t|
+    t.string   "name"
+    t.string   "encoded_url"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
+  create_table "subscriptions", :force => true do |t|
+    t.integer  "fiction_id"
+    t.integer  "user_id"
+    t.integer  "chapter_id"
+    t.boolean  "active"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "subscriptions", ["chapter_id"], :name => "index_subscriptions_on_chapter_id"
+  add_index "subscriptions", ["fiction_id"], :name => "index_subscriptions_on_fiction_id"
+  add_index "subscriptions", ["user_id"], :name => "index_subscriptions_on_user_id"
 
   create_table "users", :force => true do |t|
     t.string   "account"

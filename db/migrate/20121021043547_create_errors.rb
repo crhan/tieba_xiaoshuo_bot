@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class CreateErrors < ActiveRecord::Migration
   def change
     create_table :errors do |t|
