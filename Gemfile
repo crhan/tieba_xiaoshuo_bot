@@ -48,10 +48,19 @@ gem "slim"
 
 gem "hpricot"
 
-group :development do
-  gem 'pry'
-  gem 'pry_debug'
-  gem 'pry-rails'
+group :test, :development do
+  gem "pry"
+  gem "pry_debug"
+  gem "pry-rails"
+  gem "rb-fsevent"
+  gem "growl"
+  gem "guard-pow"
+  gem "rspec-rails", "~> 2.11.4"
+  gem "guard-rspec"
+  gem "guard-spork"
+  gem "guard-bundler"
+  gem "factory_girl_rails"
 end
+
 gem "nokogiri", "~> 1.5.5"
 gem "foreman"
