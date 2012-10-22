@@ -6,7 +6,7 @@ class Subscription < ActiveRecord::Base
   belongs_to :chapter
   validates :fiction_id, :user_id, :presence => true
   validates :fiction_id, :uniqueness => { :scope => :user_id }
-  default_scope where(active: true)
+  scope :active, where(active: true)
 
   def new_chapters
     self.fiction.chapters.newer_than(self.chapter_id)

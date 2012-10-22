@@ -5,8 +5,9 @@ class Chapter < ActiveRecord::Base
   belongs_to :fiction
   validates :title, :thread_id, :presence => true
   validates :thread_id, :uniqueness => true
+  default_scope order("thread_id")
   scope :newer_than, ->(id) {where("id > ?", id)}
-  default_scope where(active: true).order("thread_id")
+  scope :active, where(active: true)
 
   def to_s
     "#{self.title}, http://wapp.baidu.com/m?kz=#{thread_id}"
