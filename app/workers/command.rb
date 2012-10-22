@@ -12,12 +12,20 @@ class Command
   private
   def func_sub user, *args
     fic_name, = *args
-    Subscription.create!(user: user,
-                                  fiction: Fiction.find_or_create_by_name(fic_name))
-    Bot::Gateway.deliver user.account, %{订阅"#{fic_name}"成功}
-  rescue ActiveRecord::RecordInvalid => e
-    # 你已经订阅过啦
-    Bot::Gateway.deliver user.account, %{订阅"#{fic_name}"失败: 您已订阅}
+    fiction = Fiction.find_or_create_by_name(fic_name)
+    msg = Subscription.find_or_create_by_user_id_and_fiction_id(user, fiction).sub
+    Bot::Gateway.deliver user.account, msg
+  rescue SubscriptionError => e
+    LogError.perform_async(e.class, e.message, e.backtrace)
+  end
+
+  def func_unsub user, *args
+    fic_name, = *args
+    fiction = Fiction.find_or_create_by_name(fic_name)
+    msg = Subscription.find_or_create_by_user_id_and_fiction_id(user, fiction).unsub
+    Bot::Gateway.deliver user.account, msg
+  rescue SubscriptionError => e
+    LogError.perform_async(e.class, e.message, e.backtrace)
   end
 
   def func_check user, *args

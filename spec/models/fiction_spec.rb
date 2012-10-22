@@ -13,4 +13,12 @@ describe Fiction do
       subject.url.should == "http://tieba.baidu.com/f?kw=%C9%F1%D3%A1%CD%F5%D7%F9"
     end
   end
+
+  describe "#get_new_chapters" do
+    it do
+      aim = [{:thread_id=>1935570165, :title=>"第二百八十三章 圣战前奏（下）"}]
+      new_chapter = subject.send(:get_new_chapters, File.read(Pow(Rails.root,"spec/tmp/fiction.html")))
+      new_chapter.should == aim
+    end
+  end
 end

@@ -18,9 +18,9 @@ class Fiction < ActiveRecord::Base
     "http://tieba.baidu.com/f?kw=#{self.encoded_url}"
   end
 
-  def update_chapters
+  def update_chapters chapter_list=get_new_chapters
     chapters = []
-    get_new_chapters.each do |ch|
+    chapter_list.each do |ch|
       chapter = Chapter.create(:fiction => self, :title => ch[:title], :thread_id => ch[:thread_id])
       chapters << chapter if chapter.valid?
     end

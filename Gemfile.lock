@@ -94,6 +94,7 @@ GEM
     mysql (2.8.1)
     nokogiri (1.5.5)
     polyglot (0.3.3)
+    pow (0.2.3)
     pry (0.9.10)
       coderay (~> 1.0.5)
       method_source (~> 0.8)
@@ -202,6 +203,7 @@ DEPENDENCIES
   jquery-rails
   mysql
   nokogiri (~> 1.5.5)
+  pow
   pry
   pry-rails
   pry_debug

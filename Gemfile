@@ -55,6 +55,7 @@ group :test, :development do
   gem "rb-fsevent"
   gem "growl"
   gem "guard-pow"
+  gem "pow"
   gem "rspec-rails", "~> 2.11.4"
   gem "guard-rspec"
   gem "guard-spork"
