@@ -9,6 +9,7 @@ class Subscription < ActiveRecord::Base
   validates :fiction_id, :uniqueness => { :scope => :user_id }
   delegate :name, :to => :fiction, :prefix => true
   delegate :chapters, :to => :fiction
+  scope :active_fictions, where(active: true).group(:fiction_id)
   scope :active, where(active: true)
 
   def new_chapters
