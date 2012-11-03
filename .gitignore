@@ -1,7 +1,0 @@
-.rvmrc
-db/xiaoshuo.db
-echo.rb
-test.rb
-log/*.log
-coverage
-.bundle
