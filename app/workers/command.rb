@@ -32,4 +32,7 @@ class Command
     Bot::Gateway.deliver user.account, user.new_chapers
   end
 
+  def __func_update
+    Subscription.active
+  end
 end

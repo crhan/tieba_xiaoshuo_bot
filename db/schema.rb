@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121021110658) do
+ActiveRecord::Schema.define(:version => 20121025060831) do
 
   create_table "chapters", :force => true do |t|
     t.integer  "thread_id"
@@ -44,6 +44,11 @@ ActiveRecord::Schema.define(:version => 20121021110658) do
     t.string   "encoded_url"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
+  end
+
+  create_table "pub_sets", :force => true do |t|
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "subscriptions", :force => true do |t|
