@@ -54,13 +54,19 @@ group :test, :development do
   gem "pry-rails"
   gem "rb-fsevent"
   gem "growl"
-  gem "guard-pow"
   gem "pow"
+  gem "factory_girl_rails"
+end
+
+group :test do
+  gem "cucumber-rails", "~> 1.3.0", :require => false
+  gem "guard-cucumber", "~> 1.2.2"
   gem "rspec-rails", "~> 2.11.4"
+  gem "guard-pow"
   gem "guard-rspec"
   gem "guard-spork"
   gem "guard-bundler"
-  gem "factory_girl_rails"
+  gem "database_cleaner"
 end
 
 gem "nokogiri", "~> 1.5.5"
