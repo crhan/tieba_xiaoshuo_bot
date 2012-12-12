@@ -2,7 +2,9 @@
 require "spec_helper"
 
 describe Fiction do
-  subject {create(:fiction)}
+  fixtures :users
+  fixtures :fictions
+  subject {Fiction.create(fictions(:one))}
   it "should calc 'encoded_url' from fiction name before create" do
     subject.name.should == "神印王座"
     subject.encoded_url.should == "%C9%F1%D3%A1%CD%F5%D7%F9"

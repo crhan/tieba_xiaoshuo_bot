@@ -8,9 +8,10 @@ namespace :bot do
      EM.run {
        EM::start_server host, port, Bot::Client
        EM.add_periodic_timer(10.minutes) do
-         Bot.logger.info %{every 10 minutes run a job}
+         Bot.logger.info %{every 10 minutes run a fetch}
+         FetchWorker.perform_async
        end
-       Bot.logger.info %{Running Bot server on 8081}
+       Bot.logger.info %{Running Bot server on #{BOT_CONFIG["port"]}}
        TCPSocket.open(host, port).close
      }
   end

@@ -13,7 +13,7 @@ require "hpricot"
 require "active_support/core_ext"
 
 # require sidekiq worker
-Dir.glob(File.expand_path("../../app/workers/*.rb", __FILE__)).each do |w|
+Dir.glob(File.expand_path("../../../app/workers/*.rb", __FILE__)).each do |w|
   require w
 end
 

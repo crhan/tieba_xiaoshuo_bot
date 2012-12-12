@@ -5,7 +5,7 @@ class CreateSubscriptions < ActiveRecord::Migration
       t.references :fiction
       t.references :user
       t.references :chapter
-      t.boolean :active
+      t.boolean :active, :default => false
 
       t.timestamps
     end

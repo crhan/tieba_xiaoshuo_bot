@@ -56,12 +56,10 @@ group :test, :development do
   gem "growl"
   gem "pow"
   gem "factory_girl_rails"
+  gem "rspec-rails", "~> 2.11.4"
 end
 
 group :test do
-  gem "cucumber-rails", "~> 1.3.0", :require => false
-  gem "guard-cucumber", "~> 1.2.2"
-  gem "rspec-rails", "~> 2.11.4"
   gem "guard-pow"
   gem "guard-rspec"
   gem "guard-spork"

@@ -1,6 +1,6 @@
 # -*- encoding : utf-8 -*-
+class SubscriptionError < StandardError; end
 class Subscription < ActiveRecord::Base
-  class SubscriptionError < StandardError; end
   attr_accessible :active, :user, :fiction, :chapter
   belongs_to :fiction
   belongs_to :user
@@ -14,8 +14,10 @@ class Subscription < ActiveRecord::Base
 
   def new_chapters
     c = self.chapters.newer_than(self.chapter_id)
-    self.chapter_id = c.last.id
-    self.save!
+    unless c.blank?
+      self.chapter_id = c.last.id
+      self.save!
+    end
     c
   end
 

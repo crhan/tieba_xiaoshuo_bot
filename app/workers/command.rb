@@ -1,8 +1,9 @@
 # -*- encoding : utf-8 -*-
 class Command
   include Sidekiq::Worker
+  sidekiq_options :retry => false
   def perform(from, msg)
-    re = /^[-_]+(\w+)/
+    re = /^[ -_]+(\w+)/
     comm = re.match(msg)[1]
     args = re.match(msg).post_match.strip.split(/\s+/)
     user = User.find_by_account(from)
@@ -12,17 +13,16 @@ class Command
   private
   def func_sub user, *args
     fic_name, = *args
-    fiction = Fiction.find_or_create_by_name(fic_name)
-    msg = Subscription.find_or_create_by_user_id_and_fiction_id(user, fiction).sub
+    msg = user.sub(fic_name)
     Bot::Gateway.deliver user.account, msg
+    FetchWorker.perform_async(fic_name)
   rescue SubscriptionError => e
     LogError.perform_async(e.class, e.message, e.backtrace)
   end
 
   def func_unsub user, *args
     fic_name, = *args
-    fiction = Fiction.find_or_create_by_name(fic_name)
-    msg = Subscription.find_or_create_by_user_id_and_fiction_id(user, fiction).unsub
+    msg = user.unsub(fic_name)
     Bot::Gateway.deliver user.account, msg
   rescue SubscriptionError => e
     LogError.perform_async(e.class, e.message, e.backtrace)
@@ -33,6 +33,6 @@ class Command
   end
 
   def __func_update
-    Subscription.active
+    Subscription.active_fictions.each {|fic| fic.update }
   end
 end

@@ -1,3 +1,3 @@
-rails: rails server
-sidekiq: sidekiq -c5
-bot: rake bot:run
+rails: bundle exec rails server
+sidekiq: bundle exec sidekiq -c5
+bot: bundle exec rake bot:run
