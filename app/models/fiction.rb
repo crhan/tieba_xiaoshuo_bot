@@ -27,7 +27,6 @@ class Fiction < ActiveRecord::Base
     !chapters.blank?
   end
 
-  alias update update_chapters
   alias fetch update_chapters
 
   def active_users

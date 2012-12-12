@@ -21,7 +21,7 @@ class FetchWorker
 
   def fetch_all
     Subscription.active_fictions.each do |fic|
-      fic.update
+      fic.update_chapters
     end
   end
 end
