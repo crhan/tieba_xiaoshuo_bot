@@ -23,7 +23,8 @@ namespace :bot do
   end
 
   task :stop, :roles => :app do
-    run "if [ -d #{current_path} ] && [ -f #{pid_file} ]; then cd #{current_path} && kill `cat #{pid_file}`; fi"
+    pid_file = "#{current_path}/tmp/pids/bot.pid"
+    run "if [ -d #{current_path} ] && [ -f #{pid_file} ]; then cd #{current_path}; kill `cat #{pid_file}`; fi"
   end
 
   task :restart, :roles => :app do
