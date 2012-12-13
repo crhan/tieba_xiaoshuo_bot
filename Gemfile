@@ -37,7 +37,7 @@ gem 'jquery-rails'
 # To use debugger
 # gem 'debugger'
 
-gem "mysql"
+gem "mysql2"
 gem "xmpp4r", "~> 0.5"
 gem "eventmachine", "~> 1.0.0"
 

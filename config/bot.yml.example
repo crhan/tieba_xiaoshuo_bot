@@ -1,0 +1,4 @@
+account: gtalk_account
+password: password
+host: 127.0.0.1 #TCP listen host
+port: 8081 #TCP listen port
