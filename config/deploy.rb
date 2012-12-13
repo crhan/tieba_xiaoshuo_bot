@@ -19,7 +19,7 @@ require 'capistrano-unicorn'
 namespace :bot do
   task :start, :roles => :app do
     rails_env = fetch(:rails_env, 'production')
-    run "cd #{current_path}; nohup #{fetch(:bundle_cmd, "bundle")} exec bot:run RAILS_ENV=#{rails_env} &>> #{current_path}/log/sidekiq.log &", :pty => false
+    run "cd #{current_path}; nohup #{fetch(:bundle_cmd, "bundle")} exec rake bot:run RAILS_ENV=#{rails_env} &>> #{current_path}/log/sidekiq.log &", :pty => false
   end
 
   task :stop, :roles => :app do

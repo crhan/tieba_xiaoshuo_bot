@@ -1,7 +1,5 @@
 # -*- encoding : utf-8 -*-
 $:.unshift File.expand_path("..", __FILE__)
-require "pry"
-require "pry_debug"
 require "json"
 require "eventmachine"
 require "xmpp4r/client"

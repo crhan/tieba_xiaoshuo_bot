@@ -1,6 +1,5 @@
 # -*- encoding : utf-8 -*-
 require "spec_helper"
-require 'pry'
 
 describe Chapter do
   it "should deactive the same chapter title in one fiction" do
