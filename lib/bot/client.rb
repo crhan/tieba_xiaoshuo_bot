@@ -14,6 +14,7 @@ require "active_support/core_ext"
 Dir.glob(File.expand_path("../../../app/workers/*.rb", __FILE__)).each do |w|
   require w
 end
+require File.expand_path("../../../config/initializers/sidekiq.rb", __FILE__)
 
 module Bot
 
