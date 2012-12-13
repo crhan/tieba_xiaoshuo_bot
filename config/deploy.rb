@@ -1,5 +1,6 @@
 # -*- encoding : utf-8 -*-
 require 'bundler/capistrano'
+require 'sidekiq/capistrano'
 
 set :application, "tieba_bot"
 set :repository,  "https://github.com/crhan/tieba_xiaoshuo_bot"
@@ -15,17 +16,21 @@ require 'capistrano-unicorn'
 # if you want to clean up old releases on each deploy uncomment this:
 # after "deploy:restart", "deploy:cleanup"
 
-# if you're still using the script/reaper helper you will need
-# these http://github.com/rails/irs_process_scripts
+namespace :bot do
+  task :start, :roles => :app do
+    rails_env = fetch(:rails_env, 'production')
+    run "cd #{current_path}; nohup #{fetch(:bundle_cmd, "bundle")} exec bot:run RAILS_ENV=#{rails_env} &>> #{current_path}/log/sidekiq.log &", :pty => false
+  end
 
-# If you are using Passenger mod_rails uncomment this:
-# namespace :deploy do
-#   task :start do ; end
-#   task :stop do ; end
-#   task :restart, :roles => :app, :except => { :no_release => true } do
-#     run "#{try_sudo} touch #{File.join(current_path,'tmp','restart.txt')}"
-#   end
-# end
+  task :stop, :roles => :app do
+    run "if [ -d #{current_path} ] && [ -f #{pid_file} ]; then cd #{current_path} && kill `cat #{pid_file}`; fi"
+  end
+
+  task :restart, :roles => :app do
+    stop
+    start
+  end
+end
 
 namespace :deploy do
   task :symlink_shared, :roles => :app do
@@ -36,4 +41,3 @@ end
 
 after 'deploy:update_code', 'deploy:symlink_shared'
 after 'deploy:restart', 'unicorn:reload'
-after 'deploy:restart', 'unicorn:restart'
