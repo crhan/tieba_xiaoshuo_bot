@@ -7,3 +7,5 @@ rails_env = ENV["RAILS_ENV"] || 'production'
 
 stderr_path "log/unicorn.err.log"
 stdout_path "log/unicorn.out.log"
+
+pid "tmp/pids/unicorn.pid"
