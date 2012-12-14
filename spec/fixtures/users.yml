@@ -2,3 +2,8 @@ one:
   id: 1
   account: "crhan123@gmail.com"
   active: true
+
+two:
+  id: 2
+  account: "ruohanc@gmail.com"
+  active: false

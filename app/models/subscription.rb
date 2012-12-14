@@ -14,7 +14,7 @@ class Subscription < ActiveRecord::Base
   scope :active, where(active: true)
 
   def new_chapters
-    c = self.chapters.newer_than(self.chapter_id)
+    c = self.chapters.newer_than_and_limit(self.chapter_id)
     unless c.blank?
       self.chapter_id = c.last.id
       self.save!

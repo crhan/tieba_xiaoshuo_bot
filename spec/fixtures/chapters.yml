@@ -1,0 +1,13 @@
+one:
+  id: 1
+  title: "1"
+  thread_id: 1000
+  fiction_id: 1
+  active: true
+
+two:
+  id: 2
+  title: "2"
+  thread_id: 1000
+  fiction_id: 1
+  active: true

@@ -8,6 +8,7 @@ class Chapter < ActiveRecord::Base
   default_scope order("thread_id")
   scope :newer_than, ->(id) {where("id > ?", id)}
   scope :active, where(active: true)
+  scope :newer_than_and_limit, ->(id, num=20) { newer_than(id).limit(num).reorder("thread_id DESC").reverse }
 
   def to_s
     "#{self.title}, http://wapp.baidu.com/m?kz=#{thread_id}"
