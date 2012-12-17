@@ -5,13 +5,13 @@ module Bot
     class << self
       def deliver(to, message)
         hash = {send_to: to, content: message}
-        socket.print JSON.generate(hash)
+
+        # open Socket each time
+        TCPSocket.open(BOT_CONFIG["host"], BOT_CONFIG["port"]) do |s|
+          s.print JSON.generate(hash)
+        end
       end
 
-      private
-      def socket
-        @@socket ||= TCPSocket.open(BOT_CONFIG["host"], BOT_CONFIG["port"])
-      end
     end
   end
 end
