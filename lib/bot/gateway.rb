@@ -4,7 +4,7 @@ module Bot
     BOT_CONFIG = YAML::load(File.open(File.join(Rails.root, "config/bot.yml")))
     class << self
       def deliver(to, message)
-        hash = {send_to: to, content: message}
+        hash = {type: :message, send_to: to, content: message}
 
         # open Socket each time
         TCPSocket.open(BOT_CONFIG["host"], BOT_CONFIG["port"]) do |s|

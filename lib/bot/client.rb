@@ -45,7 +45,13 @@ module Bot
     #   {"send_to":"who_receive@example.com","content":"what you want to say"}
     def receive_data(data)
       Bot.logger.debug %{receive: #{data}}
-      deliver JSON.parse(data, symbolize_names: true) unless data.blank?
+      json_data = JSON.parses(data, symbolize_names: true)
+      case json_data[:type]
+      when :reconnect
+        do_connection
+      when :message
+        deliver json_data
+      end
     rescue => e
       Error::log(e)
     end
