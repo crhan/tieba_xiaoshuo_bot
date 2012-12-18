@@ -45,7 +45,7 @@ module Bot
     #   {"send_to":"who_receive@example.com","content":"what you want to say"}
     def receive_data(data)
       Bot.logger.debug %{receive: #{data}}
-      json_data = JSON.parses(data, symbolize_names: true)
+      json_data = JSON.parse(data, symbolize_names: true)
       case json_data[:type]
       when :reconnect
         do_connection
