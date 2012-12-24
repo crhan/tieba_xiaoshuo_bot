@@ -47,10 +47,12 @@ module Bot
       Bot.logger.debug %{receive: #{data}}
       json_data = JSON.parse(data, symbolize_names: true)
       case json_data[:type]
-      when :reconnect
+      when "reconnect"
         do_connection
-      when :message
+      when "message"
         deliver json_data
+      else
+        Error::log %{Unkown type #{json_data[:type]}}
       end
     rescue => e
       Error::log(e)
